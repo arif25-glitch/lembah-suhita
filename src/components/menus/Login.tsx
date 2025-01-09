@@ -17,7 +17,7 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (usernameOrEmail === 'arabic' && password === 'arabic123') {
+    if (usernameOrEmail === 'admin' && password === 'admin') {
       window.location.href = '/admin';
     } else {
       fetch(isLogin ? 'api/user/read' : 'api/user/create', {

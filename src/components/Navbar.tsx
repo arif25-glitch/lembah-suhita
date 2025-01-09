@@ -61,7 +61,7 @@ const Navbar = () => {
     window.location.reload();
   };
 
-  const navItems = ['Beranda', 'Tentang Kami', 'Berita', 'Paket Lembah Suhita', 'Pengumuman'];
+  const navItems = ['Beranda', 'Tentang Kami', 'Berita', 'Paket Lembah Suhita', 'Pengumuman', 'Pilih Paket'];
 
   const renderContent = () => {
     switch (activeMenu) {
@@ -77,6 +77,8 @@ const Navbar = () => {
         return <Home setActiveMenu='Pengumuman' />;
       case 'Login':
         return <Login />;
+        case 'Pilih Paket':
+          return <Products />;
       case 'ProductDetail':
         return selectedProduct ? <ProductDetail product={selectedProduct} onBack={() => handleMenuClick('Products')} /> : <Products />;
       case 'Cart':
@@ -90,7 +92,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-white shadow-md">
+      <nav className="bg-white shadow-md sticky top-0 z-50">
         <div className="max-w-10x1 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
