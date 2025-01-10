@@ -6,7 +6,6 @@ export async function GET() {
     const database = client.db('lembah_suhita');
     const collection = database.collection('paket');
     const result = await collection.find().toArray();
-    console.log(result);
     return new Response(JSON.stringify({
       status: true,
       data: result,

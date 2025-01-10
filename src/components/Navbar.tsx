@@ -19,7 +19,7 @@ const Navbar = () => {
   const [username, setUsername] = useState('');
   const [cartItemCount, setCartItemCount] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedProduct] = useState<{ id: string[]; name: string; volume: string[]; price: string[]; priceDiscount: string[]; imageUrl: string[]; } | null>(null);
+  const [selectedProduct] = useState<{ id: string; nama: string; deskripsi: string; harga: string; } | null>(null);
 
   useEffect(() => {
     if (Cookies.get('username')) {

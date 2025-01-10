@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-// import ProductDetail from './ProductDetail';
+import ProductDetail from './ProductDetail';
 
 interface Product {
   id: string;
@@ -9,7 +9,7 @@ interface Product {
 }
 
 const Products = () => {
-  const [, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [data, setData] = React.useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,9 +50,9 @@ const Products = () => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
-  // if (selectedProduct) {
-  //   return <ProductDetail product={selectedProduct} onBack={() => setSelectedProduct(null)} />;
-  // }
+  if (selectedProduct) {
+    return <ProductDetail product={selectedProduct} onBack={() => setSelectedProduct(null)} />;
+  }
 
   return (
     <>

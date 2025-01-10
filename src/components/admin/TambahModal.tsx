@@ -10,8 +10,8 @@ const TambahModal: React.FC<TambahModalProps> = ({ isOpen, onClose }) => {
   const [name, setName] = React.useState('');
   const [volume, setVolume] = React.useState('');
   const [price, setPrice] = React.useState('');
-  const [priceDiscount, setPriceDiscount] = React.useState('');
-  const [image, setImage] = React.useState(null);
+  const [priceDiscount, ] = React.useState('');
+  const [image, ] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const formatNumber = (value: string) => {
@@ -46,14 +46,14 @@ const TambahModal: React.FC<TambahModalProps> = ({ isOpen, onClose }) => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleImageChange = (event: any) => {
-    const selectedFile = event.target.files[0];
-    if (selectedFile) {
-      setImage(selectedFile);
-    } else {
-      setImage(null);
-    }
-  }
+  // const handleImageChange = (event: any) => {
+  //   const selectedFile = event.target.files[0];
+  //   if (selectedFile) {
+  //     setImage(selectedFile);
+  //   } else {
+  //     setImage(null);
+  //   }
+  // }
 
   return (
     <>
@@ -64,12 +64,12 @@ const TambahModal: React.FC<TambahModalProps> = ({ isOpen, onClose }) => {
           </div>
         </div>
       )}
-      <Modal isOpen={isOpen} onClose={onClose} title="Tambah Produk">
+      <Modal isOpen={isOpen} onClose={onClose} title="Tambah Paket">
         <form onSubmit={handleAdd}>
           {/* Form fields */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-              Nama Barang
+              Nama Paket
             </label>
             <input
               id="name"
@@ -81,13 +81,13 @@ const TambahModal: React.FC<TambahModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="volume">
-              Volume Barang
+              Deskripsi Paket
             </label>
-            <input
+            <textarea
               id="volume"
-              type="text"
               onChange={(e) => setVolume(e.target.value)}
-              placeholder="Volume Barang"
+              placeholder="Deskripsi Barang"
+              rows={5}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
@@ -101,30 +101,6 @@ const TambahModal: React.FC<TambahModalProps> = ({ isOpen, onClose }) => {
               value={price}
               onChange={(e) => setPrice(formatNumber(e.target.value.replace(/\D/g, '')))}
               placeholder="Harga Barang"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="priceDiscount">
-              Diskon
-            </label>
-            <input
-              id="priceDiscount"
-              type="text"
-              value={priceDiscount}
-              onChange={(e) => setPriceDiscount(formatNumber(e.target.value.replace(/\D/g, '')))}
-              placeholder="Diskon"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imageUrl">
-              Gambar Barang
-            </label>
-            <input
-              id="imageUrl"
-              onChange={handleImageChange}
-              type="file"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>

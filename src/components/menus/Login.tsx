@@ -19,6 +19,7 @@ const Login = () => {
 
     if (usernameOrEmail === 'admin' && password === 'admin') {
       window.location.href = '/admin';
+      Cookies.set('username', 'admin');
     } else {
       fetch(isLogin ? 'api/user/read' : 'api/user/create', {
         method: 'POST',

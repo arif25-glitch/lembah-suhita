@@ -12,11 +12,9 @@ import Cookies from 'js-cookie';
 interface CartItem {
   data: {
     _id: string;
-    name: string;
-    price: string;
-    volume: string;
-    priceDiscount: string;
-    imageUrl: string;
+    nama: string;
+    deskripsi: string;
+    harga: string;
   };
   count: number;
 }
@@ -25,9 +23,10 @@ const MyCart = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [usernameState, setUsernameState] = useState('');
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [, setTotalPrice] = useState(0);
   const [isPurchase, setIsPurchase] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isServed, setIsServed] = useState(false);
 
   useEffect(() => {
     const username = Cookies.get('username');
@@ -130,74 +129,80 @@ const MyCart = () => {
 
   const handlePurchase = async () => {
     // Implement purchase logic here
+    setIsServed(true);
     try {
-      fetch('/api/transaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          order_id: 'order-' + Math.floor(Math.random() * 1000000),
-          gross_amount: totalPrice, // Amount in IDR
-          customer_details: {
-            first_name: usernameState,
-            last_name: '-',
-            email: 'john.doe@example.com',
-            phone: '08123456789',
-          },
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status) {
-            window.snap.pay(data.token, {
-              onSuccess: () => {
-                const transactionData = {
-                  order_id: data.token,
-                  gross_amount: totalPrice,
-                  customer_details: {
-                    first_name: usernameState,
-                    last_name: '-',
-                    email: '',
-                    phone: '',
-                  },
-                  items: cartItems,
-                  transaction_date: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
-                };
-                fetch('/api/transaction/on_success', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify(transactionData),
-                })
-                  .then((res) => res.json())
-                  .then((data) => {
-                    if (data.status) {
-                      setIsPurchase(true);
-                    }
-                  });
-              },
-              onPending: () => {
-                setIsPurchase(false);
-                console.log('Payment Pending');
-              },
-              onError: (result: string) => {
-                setIsPurchase(false);
-                console.log('Payment Error:', result);
-              },
-              onClose: () => {
-                setIsPurchase(false);
-                console.log('Payment popup closed.');
-              },
-            });
-
-          }
-        })
-
+      
     } catch (err) {
       console.error(err);
     }
+    // try {
+    //   fetch('/api/transaction', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({
+    //       order_id: 'order-' + Math.floor(Math.random() * 1000000),
+    //       gross_amount: totalPrice, // Amount in IDR
+    //       customer_details: {
+    //         first_name: usernameState,
+    //         last_name: '-',
+    //         email: 'john.doe@example.com',
+    //         phone: '08123456789',
+    //       },
+    //     }),
+    //   })
+    //     .then((res) => res.json())
+    //     .then((data) => {
+    //       if (data.status) {
+    //         window.snap.pay(data.token, {
+    //           onSuccess: () => {
+    //             const transactionData = {
+    //               order_id: data.token,
+    //               gross_amount: totalPrice,
+    //               customer_details: {
+    //                 first_name: usernameState,
+    //                 last_name: '-',
+    //                 email: '',
+    //                 phone: '',
+    //               },
+    //               items: cartItems,
+    //               transaction_date: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
+    //             };
+    //             fetch('/api/transaction/on_success', {
+    //               method: 'POST',
+    //               headers: {
+    //                 'Content-Type': 'application/json',
+    //               },
+    //               body: JSON.stringify(transactionData),
+    //             })
+    //               .then((res) => res.json())
+    //               .then((data) => {
+    //                 if (data.status) {
+    //                   setIsPurchase(true);
+    //                 }
+    //               });
+    //           },
+    //           onPending: () => {
+    //             setIsPurchase(false);
+    //             console.log('Payment Pending');
+    //           },
+    //           onError: (result: string) => {
+    //             setIsPurchase(false);
+    //             console.log('Payment Error:', result);
+    //           },
+    //           onClose: () => {
+    //             setIsPurchase(false);
+    //             console.log('Payment popup closed.');
+    //           },
+    //         });
+
+    //       }
+    //     })
+
+    // } catch (err) {
+    //   console.error(err);
+    // }
   };
 
   const afterPurchase = () => {
@@ -207,7 +212,7 @@ const MyCart = () => {
 
   const calculateTotalPrice = () => {
     return cartItems.reduce((total, item) => {
-      const itemTotal = (parseInt(item.data.price) - parseInt(item.data.priceDiscount)) * item.count;
+      const itemTotal = (parseInt(item.data.harga)) * item.count;
       return total + itemTotal;
     }, 0);
   };
@@ -233,6 +238,21 @@ const MyCart = () => {
           </div>
         )
       }
+      {
+        isServed && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+            <div className="bg-white p-6 rounded-md shadow-md text-center">
+              <p>Anda Telah Masuk Antrian Tiket, Mohon Untuk Tunggu Beberapa Saat Atau Hubungi Admin Bila Ada Kesalahan</p>
+              <button
+                onClick={() => setIsServed(false)}
+                className="bg-[#794422] text-white px-4 py-2 rounded-md mt-4"
+              >
+                Oke
+              </button>
+            </div>
+          </div>
+        )
+      }
       {isPurchase && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-md text-center">
@@ -254,11 +274,11 @@ const MyCart = () => {
           <ul>
             {cartItems.map(item => (
               <li key={item.data._id} className="flex justify-between items-center mb-2">
-                <img src={item.data.imageUrl} alt={item.data.name} className="w-16 h-16 object-cover rounded mr-4" />
+                {/* <img src={item.data.imageUrl} alt={item.data.name} className="w-16 h-16 object-cover rounded mr-4" /> */}
                 <div className="flex flex-col flex-grow">
-                  <span>{item.data.name} ({item.data.volume}) (x{item.count})</span>
+                  <span>{item.data.nama} (x{item.count})</span>
                   <div className="flex justify-between items-center mt-2">
-                    <span className="text-lg font-bold">Rp. {(parseInt(item.data.price) - parseInt(item.data.priceDiscount)) * item.count}</span>
+                    <span className="text-lg font-bold">Rp. {(parseInt(item.data.harga)) * item.count}</span>
                     <div>
                       <button
                         onClick={() => addProduct(item.data._id)}
@@ -284,9 +304,9 @@ const MyCart = () => {
         </div>
         <button
           onClick={handlePurchase}
-          className="bg-indigo-500 text-white px-4 py-2 rounded-md mt-4"
+          className="bg-[#794422] text-white px-4 py-2 rounded-md mt-4"
         >
-          Bayar
+          Pesan Sekarang
         </button>
       </div>
     </>

@@ -6,7 +6,7 @@ export async function POST(req: Request) {
 
   try {
     await client.connect();
-    const database = client.db('toko_arabic_parfume');
+    const database = client.db('lembah_suhita');
     const collection = database.collection('users');
     const dbResult = await collection.deleteOne({ _id: new ObjectId(id) });
 
