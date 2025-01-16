@@ -130,6 +130,36 @@ const MyCart = () => {
   const handlePurchase = async () => {
     // Implement purchase logic here
     setIsServed(true);
+    const dataPurchasing = {
+      username: usernameState,
+      items: cartItems,
+      totalPrice: calculateTotalPrice(),
+      transaction_date: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
+      totalPurchased: cartItems.reduce((total, item) => total + item.count, 0),
+      status: "pending",
+    }
+
+    try {
+      setIsLoading(true);
+      fetch('/api/transaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataPurchasing),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status) {
+            setIsServed(false);
+            setIsLoading(false);
+            setIsPurchase(true);
+          }
+        });
+    } catch (err) {
+      console.error(err);
+    }
+
     try {
       
     } catch (err) {
@@ -244,7 +274,7 @@ const MyCart = () => {
             <div className="bg-white p-6 rounded-md shadow-md text-center">
               <p>Anda Telah Masuk Antrian Tiket, Mohon Untuk Tunggu Beberapa Saat Atau Hubungi Admin Bila Ada Kesalahan</p>
               <button
-                onClick={() => setIsServed(false)}
+                onClick={() => handlePurchase}
                 className="bg-[#794422] text-white px-4 py-2 rounded-md mt-4"
               >
                 Oke
@@ -256,7 +286,7 @@ const MyCart = () => {
       {isPurchase && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-md text-center">
-            <h2 className="text-2xl font-bold mb-4">Terimakasih telah belanja di toko kami</h2>
+            <h2 className="text-2xl font-bold mb-4">Terimakasih telah memesan tiket di Lembah Suhita</h2>
             <button
               onClick={afterPurchase}
               className="bg-indigo-500 text-white px-4 py-2 rounded-md mt-4"

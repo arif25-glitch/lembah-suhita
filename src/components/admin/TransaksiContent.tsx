@@ -8,7 +8,7 @@ interface AnalyticsData {
   value: number;
 }
 
-const AnalyticsContent = () => {
+const TransaksiContent = () => {
   const [data, setData] = useState<AnalyticsData[]>([]);
   const [isFetched, setIsFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -89,4 +89,4 @@ const AnalyticsContent = () => {
   );
 };
 
-export default AnalyticsContent;
+export default TransaksiContent;

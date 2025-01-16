@@ -1,51 +1,65 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Antrian {
   id: string;
   nama: string;
-  paket: string;
+  totalHarga: number;
   tanggal: string;
+  totalPemelian: number;
+  status: string;
+  sesi: string;
 }
-
-const dummyAntrian: Antrian[] = [
-  {
-    id: "1",
-    nama: "John Doe",
-    paket: "Basic Clean",
-    tanggal: "2024-01-15"
-  },
-  {
-    id: "2",
-    nama: "Jane Smith",
-    paket: "Deep Clean",
-    tanggal: "2024-01-15"
-  },
-  {
-    id: "3",
-    nama: "Mike Johnson",
-    paket: "Premium Clean",
-    tanggal: "2024-01-16"
-  },
-  {
-    id: "4",
-    nama: "Sarah Wilson",
-    paket: "Basic Clean",
-    tanggal: "2024-01-16"
-  },
-  {
-    id: "5",
-    nama: "Robert Brown",
-    paket: "Deep Clean",
-    tanggal: "2024-01-17"
-  }
-];
 
 const AntrianContent: React.FC = () => {
   const [data, setData] = React.useState<Antrian[]>([]);
-  // const [, setDataSelectedHapus] = React.useState('');
-  const [isFetched, setIsFetched] = React.useState(false);
+  const [, setIsFetched] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
-  // const [, setSelectedAntrian] = useState<Antrian | null>(null);
+  const [sessions, setSessions] = useState<string[]>([]);
+  const [selectedSession, setSelectedSession] = useState<string>('');
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const response = await fetch('/api/session/read');
+        const result = await response.json();
+        
+        if (result.status) {
+          const sessionState = result.data.map((item: { name: string; }) => item.name);
+          setSessions(sessionState);
+        }
+
+      } catch (error) {
+        console.error('Error fetching sessions:', error);
+      }
+    };
+
+    fetchSessions();
+  }, []);
+
+  useEffect(() => {
+    const fetching = async () => {
+      const result = await fetch('/api/antrian/read_all');
+      const data = await result.json();
+      
+      if (data.status) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const tempData = data.data.map((item: any) => ({
+          id: item._id,
+          nama: item.username,
+          totalHarga: item.totalPrice,
+          tanggal: item.transaction_date,
+          totalPemelian: item.totalPurchased,
+          status: item.status,
+          sesi: item.session,
+        }));
+        setData(tempData);
+        setIsFetched(true);
+        setIsLoading(false);
+      }
+    }
+
+    fetching();
+  }, []);
 
   const handleAccept = async (id: string) => {
     setIsLoading(true);
@@ -73,37 +87,9 @@ const AntrianContent: React.FC = () => {
     }
   };
 
-  // const handleHapus = (antrian: Antrian, id: string) => {
-  //   setSelectedAntrian(antrian);
-  //   setDataSelectedHapus(id);
-  //   // Add delete confirmation logic here
-  // };
-
-  useEffect(() => {
-    // Simulate API call with dummy data
-    const fetchData = async () => {
-      if (isFetched) return;
-      try {
-        setIsLoading(true);
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        const transformedData = dummyAntrian.map(item => ({
-          ...item,
-          tanggal: new Date(item.tanggal).toLocaleDateString('id-ID')
-        }));
-        
-        setData(transformedData);
-        setIsFetched(true);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [isFetched]);
+  const filteredData = selectedSession
+    ? data.filter(antrian => antrian.sesi === selectedSession)
+    : data;
 
   return (
     <>
@@ -115,13 +101,26 @@ const AntrianContent: React.FC = () => {
         </div>
       )}
       <div>
+        <div className="flex justify-end mb-4">
+          <select
+            value={selectedSession}
+            onChange={(e) => setSelectedSession(e.target.value)}
+            className="px-4 py-2 border rounded"
+          >
+            <option value="">Pilih Sesi</option>
+            {sessions.map((session, index) => (
+              <option key={index} value={session}>
+                {session}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="overflow-auto max-h-[450px]">
           <table className="min-w-full bg-white">
             <thead>
               <tr>
                 <th className="py-2 px-4 border-b">No</th>
                 <th className="py-2 px-4 border-b">Nama Pelanggan</th>
-                <th className="py-2 px-4 border-b">Paket</th>
                 <th className="py-2 px-4 border-b">Jam</th>
                 <th className="py-2 px-4 border-b">Jumlah</th>
                 <th className="py-2 px-4 border-b">Kode</th>
@@ -129,12 +128,13 @@ const AntrianContent: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {data.map((antrian, index) => (
+              {filteredData.map((antrian, index) => (
                 <tr key={antrian.id} className="text-center">
                   <td className="py-2 px-4 border-b">{index + 1}</td>
                   <td className="py-2 px-4 border-b">{antrian.nama}</td>
-                  <td className="py-2 px-4 border-b">{antrian.paket}</td>
                   <td className="py-2 px-4 border-b">{antrian.tanggal}</td>
+                  <td className="py-2 px-4 border-b">{antrian.totalPemelian}</td>
+                  <td className="py-2 px-4 border-b">{antrian.id}</td>
                   <td className="py-2 px-4 border-b space-x-2">
                     <button 
                       onClick={() => handleAccept(antrian.id)}

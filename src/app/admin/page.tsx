@@ -7,7 +7,7 @@ import { FaTachometerAlt, FaUsers, FaSignOutAlt, FaChartBar, FaClock } from 'rea
 import { MdPeople } from 'react-icons/md';
 import OverviewContent from '@/components/admin/OverviewContent';
 import DashboardContent from '@/components/admin/DashboardContent';
-import AnalyticsContent from '@/components/admin/AnalyticsContent';
+import TransaksiContent from '@/components/admin/TransaksiContent';
 import UsersContent from '@/components/admin/UsersContent';
 import AntrianContent from '@/components/admin/AntrianContent';
 import SessionContent from '@/components/admin/SessionContent';
@@ -22,7 +22,7 @@ const AdminPage = () => {
       case 'dashboard':
         return <DashboardContent />;
       case 'analytics':
-        return <AnalyticsContent />;
+        return <TransaksiContent />;
       case 'users':
         return <UsersContent />;
       case 'antrian':
