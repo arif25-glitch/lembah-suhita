@@ -74,14 +74,23 @@ const AntrianContent: React.FC = () => {
     }
   };
 
-  const handleReject = async (id: string) => {
+  const handleRemove = async (id: string) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setData(data.filter(item => item.id !== id));
+      const response = await fetch('/api/transaction/remove', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      });
+      const result = await response.json();
+      if (result.status) {
+        setData(data.filter(item => item.id !== id));
+        window.location.reload();
+      }
     } catch (error) {
-      console.error('Error rejecting request:', error);
+      console.error('Error removing transaction:', error);
     } finally {
       setIsLoading(false);
     }
@@ -143,7 +152,7 @@ const AntrianContent: React.FC = () => {
                       Terima
                     </button>
                     <button 
-                      onClick={() => handleReject(antrian.id)}
+                      onClick={() => handleRemove(antrian.id)}
                       className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                     >
                       Tolak

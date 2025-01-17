@@ -27,6 +27,9 @@ const MyCart = () => {
   const [isPurchase, setIsPurchase] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isServed, setIsServed] = useState(false);
+  const [sessions, setSessions] = useState<string[]>([]);
+  const [selectedSession, setSelectedSession] = useState<string>('');
+  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
 
   useEffect(() => {
     const username = Cookies.get('username');
@@ -81,6 +84,25 @@ const MyCart = () => {
     }
   }, [isPurchase, usernameState]);
 
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const response = await fetch('/api/session/read');
+        const result = await response.json();
+        
+        if (result.status) {
+          const sessionState = result.data.map((item: { name: string; }) => item.name);
+          setSessions(sessionState);
+        }
+
+      } catch (error) {
+        console.error('Error fetching sessions:', error);
+      }
+    };
+
+    fetchSessions();
+  }, []);
+
   const addProduct = (productId: string) => {
     setIsLoading(true);
     fetch('/api/cart/add', {
@@ -128,6 +150,11 @@ const MyCart = () => {
   };
 
   const handlePurchase = async () => {
+    if (!selectedSession) {
+      setIsSessionModalOpen(true);
+      return;
+    }
+
     // Implement purchase logic here
     setIsServed(true);
     const dataPurchasing = {
@@ -137,6 +164,7 @@ const MyCart = () => {
       transaction_date: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
       totalPurchased: cartItems.reduce((total, item) => total + item.count, 0),
       status: "pending",
+      session: selectedSession,
     }
 
     try {
@@ -159,80 +187,6 @@ const MyCart = () => {
     } catch (err) {
       console.error(err);
     }
-
-    try {
-      
-    } catch (err) {
-      console.error(err);
-    }
-    // try {
-    //   fetch('/api/transaction', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       order_id: 'order-' + Math.floor(Math.random() * 1000000),
-    //       gross_amount: totalPrice, // Amount in IDR
-    //       customer_details: {
-    //         first_name: usernameState,
-    //         last_name: '-',
-    //         email: 'john.doe@example.com',
-    //         phone: '08123456789',
-    //       },
-    //     }),
-    //   })
-    //     .then((res) => res.json())
-    //     .then((data) => {
-    //       if (data.status) {
-    //         window.snap.pay(data.token, {
-    //           onSuccess: () => {
-    //             const transactionData = {
-    //               order_id: data.token,
-    //               gross_amount: totalPrice,
-    //               customer_details: {
-    //                 first_name: usernameState,
-    //                 last_name: '-',
-    //                 email: '',
-    //                 phone: '',
-    //               },
-    //               items: cartItems,
-    //               transaction_date: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
-    //             };
-    //             fetch('/api/transaction/on_success', {
-    //               method: 'POST',
-    //               headers: {
-    //                 'Content-Type': 'application/json',
-    //               },
-    //               body: JSON.stringify(transactionData),
-    //             })
-    //               .then((res) => res.json())
-    //               .then((data) => {
-    //                 if (data.status) {
-    //                   setIsPurchase(true);
-    //                 }
-    //               });
-    //           },
-    //           onPending: () => {
-    //             setIsPurchase(false);
-    //             console.log('Payment Pending');
-    //           },
-    //           onError: (result: string) => {
-    //             setIsPurchase(false);
-    //             console.log('Payment Error:', result);
-    //           },
-    //           onClose: () => {
-    //             setIsPurchase(false);
-    //             console.log('Payment popup closed.');
-    //           },
-    //         });
-
-    //       }
-    //     })
-
-    // } catch (err) {
-    //   console.error(err);
-    // }
   };
 
   const afterPurchase = () => {
@@ -339,6 +293,43 @@ const MyCart = () => {
           Pesan Sekarang
         </button>
       </div>
+
+      {isSessionModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+          <div className="bg-white p-6 rounded-md shadow-md text-center">
+            <h2 className="text-xl mb-4">Pilih Sesi</h2>
+            <select
+              value={selectedSession}
+              onChange={(e) => setSelectedSession(e.target.value)}
+              className="px-4 py-2 border rounded w-full mb-4"
+            >
+              <option value="">Pilih Sesi</option>
+              {sessions.map((session, index) => (
+                <option key={index} value={session}>
+                  {session}
+                </option>
+              ))}
+            </select>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setIsSessionModalOpen(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => {
+                  setIsSessionModalOpen(false);
+                  handlePurchase();
+                }}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
