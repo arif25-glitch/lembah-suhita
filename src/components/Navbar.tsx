@@ -66,25 +66,25 @@ const Navbar = () => {
   const renderContent = () => {
     switch (activeMenu) {
       case 'Home':
-        return <Home setActiveMenu='Home' />;
+        return <Home setActiveMenu='Home' otherMenu={setActiveMenu}/>;
       case 'Tentang Kami':
-        return <Home setActiveMenu='Tentang Kami' />;
+        return <Home setActiveMenu='Tentang Kami' otherMenu={setActiveMenu}/>;
       case 'Berita':
-        return <Home setActiveMenu='Berita' />;
+        return <Home setActiveMenu='Berita' otherMenu={setActiveMenu}/>;
       case 'Paket Lembah Suhita':
-        return <Home setActiveMenu='Paket Lembah Suhita' />;
+        return <Home setActiveMenu='Paket Lembah Suhita' otherMenu={setActiveMenu}/>;
       case 'Pengumuman':
-        return <Home setActiveMenu='Pengumuman' />;
+        return <Home setActiveMenu='Pengumuman' otherMenu={setActiveMenu}/>;
       case 'Login':
         return <Login />;
-        case 'Pilih Paket':
-          return <Products />;
+      case 'Pilih Paket':
+        return <Products />;
       case 'ProductDetail':
         return selectedProduct ? <ProductDetail product={selectedProduct} onBack={() => handleMenuClick('Products')} /> : <Products />;
       case 'Cart':
         return <MyCart />;
       default:
-        return <Home setActiveMenu='Home' />;
+        return <Home setActiveMenu='Home' otherMenu={setActiveMenu}/>;
     }
   };
 

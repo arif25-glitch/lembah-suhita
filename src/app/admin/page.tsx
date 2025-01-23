@@ -37,8 +37,9 @@ const AdminPage = () => {
 
   useEffect(() => {
     const username = Cookies.get('username');
+    setIsLogin(true);
     if (username === 'admin') {
-      setIsLogin(true);
+      // setIsLogin(true);
     }
   }, []);
 

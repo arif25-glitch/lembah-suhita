@@ -65,7 +65,16 @@ const AntrianContent: React.FC = () => {
     setIsLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const response = await fetch('/api/antrian/accept', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      });
+       
+      console.log(response);
+
       setData(data.filter(item => item.id !== id));
     } catch (error) {
       console.error('Error accepting request:', error);

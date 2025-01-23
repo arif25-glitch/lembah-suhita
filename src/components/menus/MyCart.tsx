@@ -149,6 +149,10 @@ const MyCart = () => {
       });
   };
 
+  const handleCek = () => {
+    window.location.href = "/cek-pesanan";
+  };
+
   const handlePurchase = async () => {
     if (!selectedSession) {
       setIsSessionModalOpen(true);
@@ -288,9 +292,15 @@ const MyCart = () => {
         </div>
         <button
           onClick={handlePurchase}
-          className="bg-[#794422] text-white px-4 py-2 rounded-md mt-4"
+          className="bg-[#794422] text-white px-4 py-2 rounded-md mt-4 mx-2"
         >
           Pesan Sekarang
+        </button>
+        <button
+          onClick={handleCek}
+          className="bg-[#794422] text-white px-4 py-2 rounded-md mt-4 mx-2"
+        >
+          Cek Pesananmu
         </button>
       </div>
 

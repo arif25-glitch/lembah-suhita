@@ -7,9 +7,10 @@ import Pengumuman from '../Pengumuman';
 
 interface HomeProps {
   setActiveMenu: string;
+  otherMenu: (data: string) => void;
 }
 
-const Home: React.FC<HomeProps> = ({ setActiveMenu }) => {
+const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
   const heroRef = useRef<HTMLDivElement>(null);
   const tentangKamiRef = useRef<HTMLDivElement>(null);
   const BeritaRef = useRef<HTMLDivElement>(null);
@@ -53,7 +54,7 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu }) => {
         <PaketLembahSuhita />
       </div>
       <div ref={PengumumanRef}>
-        <Pengumuman />
+        <Pengumuman page={otherMenu}/>
       </div>
     </>
   );
