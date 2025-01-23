@@ -17,7 +17,9 @@ export default function CekPesanan() {
   const [username, setUsernmae] = useState('');
 
   useEffect(() => {
-    setUsernmae(Cookies.get('username'));
+    setUsernmae(Cookies.get('username') as string);
+
+    console.log(username);
     fetch('/api/orders') // Adjust the API endpoint as necessary
       .then(response => response.json())
       .then(data => setOrders(data))
