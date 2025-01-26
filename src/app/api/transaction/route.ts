@@ -6,9 +6,40 @@ export async function POST(req: Request) {
   try {
     await client.connect();
     const database = client.db('lembah_suhita');
-    const collection = database.collection('antrian');
+    const antrianCollection = database.collection('antrian');
+    const sessionsCollection = database.collection('sessions');
 
-    const result = await collection.insertOne(data);
+    // Check session availability
+    const session = await sessionsCollection.findOne({ name: data.session });
+
+    if (!session) {
+      return new Response(JSON.stringify({ 
+        status: false, 
+        message: 'Session not found' 
+      }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 404
+      });
+    }
+
+    if (session.terisi >= session.kosong) {
+      return new Response(JSON.stringify({ 
+        status: false, 
+        message: 'Session is full' 
+      }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400
+      });
+    }
+
+    // Insert transaction
+    const result = await antrianCollection.insertOne(data);
+
+    // Update session terisi count
+    await sessionsCollection.updateOne(
+      { name: data.session },
+      { $inc: { terisi: 1 } }
+    );
 
     return new Response(JSON.stringify({ 
       status: true, 
@@ -17,7 +48,7 @@ export async function POST(req: Request) {
       headers: { 'Content-Type': 'application/json' },
     });
 
-  } catch (err) {
+  } catch (err) { 
     console.error(err);
     return new Response(JSON.stringify({ 
       status: false, 
@@ -30,71 +61,3 @@ export async function POST(req: Request) {
     await client.close();
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// import midtransClient from 'midtrans-client';
-
-// export async function POST(req: Request) {
-//   const { order_id, gross_amount, customer_details } = await req.json();
-
-//   const snap = new midtransClient.Snap({
-//     isProduction: false,
-//     serverKey: 'SB-Mid-server-PH2p3xxymaynPXiTrKcBmeoe',
-//   });
-
-//   const parameter = {
-//     transaction_details: {
-//       order_id: order_id,
-//       gross_amount: gross_amount, // Total amount
-//     },
-//     customer_details: customer_details, // Name, email, phone
-//   }
-  
-//   try {
-//     // Create Snap transaction token
-//     const transaction = await snap.createTransaction(parameter);
-//     return Response.json({
-//       status: true,
-//       token: transaction.token,
-//     });
-//   } catch (error) {
-//     return Response.json({
-//       status: false,
-//       token: null,
-//       error: error
-//     })
-//   }
-// }
