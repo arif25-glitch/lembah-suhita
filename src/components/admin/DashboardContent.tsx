@@ -1,8 +1,8 @@
 // import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import TambahModal from './TambahModal';
-// import EditModal from './EditModal';
-// import HapusProdukModal from './HapusProdukModal'; // Import HapusProdukModal component
+import EditModal from './EditModal';
+import HapusProdukModal from './HapusProdukModal'; // Import HapusProdukModal component
 
 interface Product {
   id: string;
@@ -13,24 +13,24 @@ interface Product {
 
 const DashboardContent: React.FC = () => {
   const [data, setData] = React.useState<Product[]>([]);
-  const [, setDataSelectedHapus] = React.useState('');
+  const [dataSelectedHapus, setDataSelectedHapus] = React.useState('');
   const [isFetched, setIsFetched] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
 
   const [isTambahOpen, setIsTambahOpen] = React.useState(false);
-  const [, setIsEditModalOpen] = useState(false);
-  const [, setIsHapusOpen] = React.useState(false);
-  const [, setSelectedProduct] = useState<Product | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isHapusOpen, setIsHapusOpen] = React.useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
     setIsEditModalOpen(true);
   };
 
-  // const handleEditModalClose = () => {
-  //   setIsEditModalOpen(false);
-  //   setSelectedProduct(null);
-  // };
+  const handleEditModalClose = () => {
+    setIsEditModalOpen(false);
+    setSelectedProduct(null);
+  };
 
   const handleHapus = (product: Product, id: string) => {
     setSelectedProduct(product);
@@ -38,23 +38,23 @@ const DashboardContent: React.FC = () => {
     setDataSelectedHapus(id);
   };
 
-  // const handleDelete = async (id: string) => {
-  //   setIsLoading(true);
-  //   const response = await fetch('/api/items/delete', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ id }),
-  //   });
+  const handleDelete = async (id: string) => {
+    setIsLoading(true);
+    const response = await fetch('/api/items/delete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+    });
 
-  //   const result = await response.json();
-  //   if (result.status) {
-  //     setData(data.filter((item) => item.id !== id));
-  //   }
-  //   setIsLoading(false);
-  //   setIsHapusOpen(false);
-  // };
+    const result = await response.json();
+    if (result.status) {
+      setData(data.filter((item) => item.id !== id));
+    }
+    setIsLoading(false);
+    setIsHapusOpen(false);
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -137,9 +137,9 @@ const DashboardContent: React.FC = () => {
 
         <TambahModal isOpen={isTambahOpen} onClose={() => setIsTambahOpen(false)} />
 
-        {/* <EditModal isOpen={isEditModalOpen} onClose={handleEditModalClose} product={selectedProduct} /> */}
+        <EditModal isOpen={isEditModalOpen} onClose={handleEditModalClose} product={selectedProduct} />
 
-        {/* <HapusProdukModal id={dataSelectedHapus} isOpen={isHapusOpen} onClose={() => setIsHapusOpen(false)} product={selectedProduct} onDelete={handleDelete} /> Use HapusProdukModal component */}
+        <HapusProdukModal id={dataSelectedHapus} isOpen={isHapusOpen} onClose={() => setIsHapusOpen(false)} product={selectedProduct} onDelete={handleDelete} />
       </div>
     </>
   );

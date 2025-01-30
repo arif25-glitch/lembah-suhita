@@ -55,11 +55,27 @@ const AntrianContent: React.FC = () => {
         setData(tempData);
         setIsFetched(true);
         setIsLoading(false);
+
+        // Apply greedy algorithm to auto accept/reject
+        autoAcceptReject(tempData);
       }
     }
 
     fetching();
   }, []);
+
+  const autoAcceptReject = async (data: Antrian[]) => {
+    const sortedData = [...data].sort((a, b) => b.totalPemelian - a.totalPemelian);
+    const maxAcceptable = 10; // Example threshold for acceptance
+
+    for (const item of sortedData) {
+      if (item.totalPemelian >= maxAcceptable) {
+        await handleAccept(item.id);
+      } else {
+        await handleRemove(item.id);
+      }
+    }
+  };
 
   const handleAccept = async (id: string) => {
     setIsLoading(true);

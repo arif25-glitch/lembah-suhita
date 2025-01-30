@@ -6,8 +6,8 @@ export async function POST(req: Request) {
 
   try {
     await client.connect();
-    const database = client.db('toko_arabic_parfume');
-    const collection = database.collection('produk');
+    const database = client.db('lembah_suhita');
+    const collection = database.collection('paket');
     const dbResult = await collection.deleteOne({ _id: new ObjectId(id) });
 
     if (dbResult.deletedCount === 1) {

@@ -93,7 +93,7 @@ const AdminPage = () => {
                 onClick={() => setSelectedNav('antrian')} 
                 className={`flex items-center py-2 px-4 rounded hover:bg-gray-700 ${selectedNav === 'antrian' ? 'bg-[#794422]' : ''}`}>
                 <MdPeople className="mr-2" />
-                <span className=" md:inline">Antrian</span>
+                <span className=" md:inline">Greedy</span>
               </a>
             </li>
             <li className="w-full">

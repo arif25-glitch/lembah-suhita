@@ -32,6 +32,8 @@ const MyCart = () => {
   const [selectedSession, setSelectedSession] = useState<string>('');
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
     const username = Cookies.get('username');
@@ -161,39 +163,8 @@ const MyCart = () => {
       return;
     }
 
-    // Implement purchase logic here
     setIsServed(true);
-    const dataPurchasing = {
-      username: usernameState,
-      items: cartItems,
-      totalPrice: calculateTotalPrice(),
-      transaction_date: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
-      totalPurchased: cartItems.reduce((total, item) => total + item.count, 0),
-      status: "pending",
-      session: selectedSession,
-    }
-
-    try {
-      setIsLoading(true);
-      fetch('/api/transaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataPurchasing),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status) {
-            setIsServed(false);
-            setIsLoading(false);
-            setIsPurchase(true);
-            setIsQrModalOpen(true); // Show QR code modal
-          }
-        });
-    } catch (err) {
-      console.error(err);
-    }
+    setIsQrModalOpen(true); // Show QR code modal
   };
 
   const afterPurchase = () => {
@@ -206,6 +177,58 @@ const MyCart = () => {
       const itemTotal = (parseInt(item.data.harga)) * item.count;
       return total + itemTotal;
     }, 0);
+  };
+
+  const handleImageSubmit = async () => {
+    if (!selectedImage) return;
+
+    const formData = new FormData();
+    formData.append('image', selectedImage);
+    formData.append('username', usernameState);
+
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.status) {
+        setIsImageModalOpen(false);
+        setSelectedImage(null);
+        setIsLoading(false);
+
+        // Implement purchase logic here
+        const dataPurchasing = {
+          username: usernameState,
+          items: cartItems,
+          totalPrice: calculateTotalPrice(),
+          transaction_date: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
+          totalPurchased: cartItems.reduce((total, item) => total + item.count, 0),
+          status: "pending",
+          session: selectedSession,
+        };
+
+        fetch('/api/transaction', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dataPurchasing),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status) {
+              setIsServed(false);
+              setIsLoading(false);
+              setIsPurchase(true);
+            }
+          });
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setIsLoading(false);
+    }
   };
 
   if (!isLoggedIn) {
@@ -358,10 +381,13 @@ const MyCart = () => {
               />
             </div>
             <button
-              onClick={() => setIsQrModalOpen(false)}
+              onClick={() => {
+                setIsQrModalOpen(false);
+                setIsImageModalOpen(true);
+              }}
               className="bg-[#794422] text-white px-4 py-2 rounded-md mt-4"
             >
-              Tutup
+              Lanjutkan
             </button>
             <button
               onClick={() => setIsQrModalOpen(false)}
@@ -369,6 +395,34 @@ const MyCart = () => {
             >
               &times;
             </button>
+          </div>
+        </div>
+      )}
+
+      {isImageModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+          <div className="bg-white p-6 rounded-md shadow-md text-center">
+            <h2 className="text-xl mb-4">Upload Bukti Pembayaran</h2>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setSelectedImage(e.target.files ? e.target.files[0] : null)}
+              className="mb-4"
+            />
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setIsImageModalOpen(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleImageSubmit}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Submit
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -8,10 +8,8 @@ interface TambahModalProps {
 
 const TambahModal: React.FC<TambahModalProps> = ({ isOpen, onClose }) => {
   const [name, setName] = React.useState('');
-  const [volume, setVolume] = React.useState('');
-  const [price, setPrice] = React.useState('');
-  const [priceDiscount, ] = React.useState('');
-  const [image, ] = React.useState(null);
+  const [deskripsi, setDeskripsi] = React.useState('');
+  const [harga, setHarga] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
   const formatNumber = (value: string) => {
@@ -20,15 +18,13 @@ const TambahModal: React.FC<TambahModalProps> = ({ isOpen, onClose }) => {
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && volume && price && priceDiscount && image) {
+    if (name && harga) {
       setIsLoading(true);
       const formData = new FormData();
 
       formData.append('name', name);
-      formData.append('volume', volume);
-      formData.append('price', price.replace(/\./g, ''));
-      formData.append('priceDiscount', priceDiscount.replace(/\./g, ''));
-      formData.append('image', image);
+      formData.append('deskripsi', deskripsi);
+      formData.append('harga', harga.replace(/\./g, ''));
 
       fetch('/api/items/add', {
         method: 'POST',
@@ -85,7 +81,7 @@ const TambahModal: React.FC<TambahModalProps> = ({ isOpen, onClose }) => {
             </label>
             <textarea
               id="volume"
-              onChange={(e) => setVolume(e.target.value)}
+              onChange={(e) => setDeskripsi(e.target.value)}
               placeholder="Deskripsi Barang"
               rows={5}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -98,13 +94,15 @@ const TambahModal: React.FC<TambahModalProps> = ({ isOpen, onClose }) => {
             <input
               id="price"
               type="text"
-              value={price}
-              onChange={(e) => setPrice(formatNumber(e.target.value.replace(/\D/g, '')))}
+              value={harga}
+              onChange={(e) => setHarga(formatNumber(e.target.value.replace(/\D/g, '')))}
               placeholder="Harga Barang"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
-          <button type="submit" className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700" disabled={isLoading}>
+          <button 
+            onClick={handleAdd}
+          type="submit" className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700" disabled={isLoading}>
             Tambah
           </button>
         </form>

@@ -6,46 +6,40 @@ interface EditModalProps {
   onClose: () => void;
   product: {
     id: string;
-    name: string;
-    price: string;
-    volume: string;
-    priceDiscount: string;
-    imageUrl: string;
+    nama: string;
+    deskripsi: string;
+    harga: string;
   } | null;
 }
 
 const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, product }) => {
-  const [name, setName] = React.useState('');
-  const [volume, setVolume] = React.useState('');
-  const [price, setPrice] = React.useState('');
-  const [priceDiscount, setPriceDiscount] = React.useState('');
-  const [image, setImage] = React.useState<File | null>(null);
+  const [nama, setNama] = React.useState('');
+  const [deskripsi, setDeskripsi] = React.useState('');
+  const [harga, setHarga] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
   useEffect(() => {
     if (product) {
-      setName(product.name);
-      setVolume(product.volume);
-      setPrice(product.price);
-      setPriceDiscount(product.priceDiscount);
+      setNama(product.nama);
+      setDeskripsi(product.deskripsi);
+      setHarga(product.harga);
     }
   }, [product]);
 
+  const formatNumber = (value: string) => {
+    return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
   const handleEdit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && volume && price && priceDiscount) {
+    if (nama && deskripsi && harga) {
       setIsLoading(true);
       const formData = new FormData();
 
       formData.append('id', product?.id || '');
-      formData.append('name', name);
-      formData.append('volume', volume);
-      formData.append('price', price);
-      formData.append('priceDiscount', priceDiscount);
-
-      if (image) {
-        formData.append('image', image);
-      }
+      formData.append('nama', nama);
+      formData.append('deskripsi', deskripsi);
+      formData.append('harga', harga.replace(/\./g, ''));
 
       fetch('/api/items/edit', {
         method: 'POST',
@@ -62,15 +56,6 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, product }) => {
     }
   }
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setImage(selectedFile);
-    } else {
-      setImage(null);
-    }
-  }
-
   return (
     <>
       {isLoading && (
@@ -84,61 +69,38 @@ const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, product }) => {
         <form onSubmit={handleEdit}>
           {/* Form fields with pre-filled data */}
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-              Nama Barang
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nama">
+              Nama Paket
             </label>
             <input
-              id="name"
+              id="nama"
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={nama}
+              onChange={(e) => setNama(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="volume">
-              Volume Barang
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="deskripsi">
+              Deskripsi Paket
             </label>
             <input
-              id="volume"
+              id="deskripsi"
               type="text"
-              value={volume}
-              onChange={(e) => setVolume(e.target.value)}
+              value={deskripsi}
+              onChange={(e) => setDeskripsi(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">
-              Harga Barang
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="harga">
+              Harga Paket
             </label>
             <input
-              id="price"
+              id="harga"
               type="text"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="priceDiscount">
-              Diskon
-            </label>
-            <input
-              id="priceDiscount"
-              type="text"
-              value={priceDiscount}
-              onChange={(e) => setPriceDiscount(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="imageUrl">
-              Gambar Barang
-            </label>
-            <input
-              id="imageUrl"
-              type="file"
-              onChange={handleImageChange}
+              value={harga}
+              onChange={(e) => setHarga(formatNumber(e.target.value.replace(/\D/g, '')))}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>

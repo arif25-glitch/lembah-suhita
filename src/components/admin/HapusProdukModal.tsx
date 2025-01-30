@@ -1,11 +1,18 @@
 import React from 'react';
 import Modal from './Modal';
 
+interface Product {
+  id: string;
+  nama: string;
+  deskripsi: string;
+  harga: string;
+}
+
 interface HapusProdukModalProps {
   id: string;
   isOpen: boolean;
   onClose: () => void;
-  product: { name: string } | null;
+  product: Product | null;
   onDelete: (id: string) => void;
 }
 
@@ -16,7 +23,7 @@ const HapusProdukModal: React.FC<HapusProdukModalProps> = ({ id, isOpen, onClose
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Hapus Produk">
-      <p>Apakah kamu yakin ingin menghapus {product?.name}?</p>
+      <p>Apakah kamu yakin ingin menghapus {product?.nama}?</p>
       <button onClick={handleDelete} className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Hapus</button>
     </Modal>
   );
