@@ -1,7 +1,7 @@
 import cloudinary from "@/app/config/cloudinary_config";
 import { client } from "@/app/config/database_config";
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
   const form = await req.formData();
   const file = form.get("image") as File;
   const nama = form.get("username") as string;
