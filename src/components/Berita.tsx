@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Product {
   id: number;
@@ -7,28 +7,40 @@ interface Product {
   image: string;
 }
 
-// interface ApiProduct {
-//   id: number;
-//   name: string;
-//   image: string;
-// }
-
 const Berita = () => {
-  const [products,] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
-  // useEffect(() => {
-  //   fetch('/api/algorithms/apriori')
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       if (data.status) {
-  //         setProducts(data.data.map((data: ApiProduct) => ({
-  //           id: data.id,
-  //           name: data.name,
-  //           image: data.image,
-  //         })));
-  //       }
-  //     });
-  // }, []);
+  useEffect(() => {
+    const productData: Product[] = [
+      {
+        id: 1,
+        name: 'Product 1',
+        image: '/img/berita/berita1.jpg',
+      },
+      {
+        id: 2,
+        name: 'Product 2',
+        image: '/img/berita/berita2.jpg',
+      },
+      {
+        id: 3,
+        name: 'Product 3',
+        image: '/img/berita/berita3.jpg',
+      },
+      {
+        id: 4,
+        name: 'Product 4',
+        image: '/img/berita/berita4.jpg',
+      },
+      {
+        id: 5,
+        name: 'Product 5',
+        image: '/img/berita/berita5.jpg',
+      },
+    ];
+
+    setProducts(productData);
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -37,13 +49,15 @@ const Berita = () => {
         <div className="mt-8 flex overflow-x-scroll space-x-4">
           {products.map((product) => (
             <div key={product.id} className="bg-white shadow-md rounded-lg p-4 min-w-[300px] flex flex-col items-center">
-              <Image
-              src={product.image}
-              alt={product.name}
-              width={200}
-              height={200}
-              className="object-contain" />
-              <h3 className="mt-4 text-lg font-bold text-gray-900">{product.name}</h3>
+              <div className="w-48 h-48 relative">
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded"
+                />
+              </div>
             </div>
           ))}
         </div>
