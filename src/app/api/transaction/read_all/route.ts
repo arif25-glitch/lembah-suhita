@@ -3,12 +3,13 @@ import { client } from '@/app/config/database_config';
 export async function GET() {
   try {
     await client.connect();
-    const database = client.db('toko_arabic_parfume');
-    const collection = database.collection('transactions');
+    const database = client.db('lembah_suhita');
+    const collection = database.collection('antrian');
     
-    const transactions = await collection.find({}).toArray();
+    const antrian = await collection.find({}).toArray();
+    console.log(antrian);
 
-    return new Response(JSON.stringify({ status: true, data: transactions }), {
+    return new Response(JSON.stringify({ status: true, data: antrian }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (err) {

@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
+import jsPDF from 'jspdf';
 
 // Declare the snap property on the window object
 declare global {
@@ -31,6 +33,7 @@ const MyCart = () => {
   const [sessions, setSessions] = useState<string[]>([]);
   const [selectedSession, setSelectedSession] = useState<string>('');
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -179,6 +182,22 @@ const MyCart = () => {
     }, 0);
   };
 
+  const generatePDFReceipt = (transactionData: any) => {
+    const doc = new jsPDF();
+    doc.text('Lembah Suhita', 10, 10);
+    doc.text('Struk', 10, 10);
+    doc.text(`Nama: ${transactionData.username}`, 10, 20);
+    doc.text(`Tanggal Transaksi: ${transactionData.transaction_date}`, 10, 30);
+    doc.text(`Total Harga: Rp. ${transactionData.totalPrice}`, 10, 40);
+    doc.text('Paket:', 10, 50);
+
+    transactionData.items.forEach((item: any, index: any) => {
+      doc.text(`${index + 1}. ${item.data.nama} - ${item.count} x Rp. ${item.data.harga}`, 10, 60 + (index * 10));
+    });
+
+    doc.save('struk_lembah_suhita.pdf');
+  };
+
   const handleImageSubmit = async () => {
     if (!selectedImage) return;
 
@@ -205,6 +224,7 @@ const MyCart = () => {
           totalPrice: calculateTotalPrice(),
           transaction_date: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
           totalPurchased: cartItems.reduce((total, item) => total + item.count, 0),
+          servedData: selectedDate,
           status: "pending",
           session: selectedSession,
         };
@@ -222,6 +242,7 @@ const MyCart = () => {
               setIsServed(false);
               setIsLoading(false);
               setIsPurchase(true);
+              generatePDFReceipt(dataPurchasing); // Generate PDF receipt
             }
           });
       }
@@ -333,7 +354,7 @@ const MyCart = () => {
       {isSessionModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
           <div className="bg-white p-6 rounded-md shadow-md text-center">
-            <h2 className="text-xl mb-4">Pilih Sesi</h2>
+            <h2 className="text-xl mb-4">Pilih Sesi dan Tanggal</h2>
             <select
               value={selectedSession}
               onChange={(e) => setSelectedSession(e.target.value)}
@@ -341,26 +362,31 @@ const MyCart = () => {
             >
               <option value="">Pilih Sesi</option>
               {sessions.map((session, index) => (
-                <option key={index} value={session}>
-                  {session}
-                </option>
+          <option key={index} value={session}>
+            {session}
+          </option>
               ))}
             </select>
+            <input
+              type="date"
+              className="px-4 py-2 border rounded w-full mb-4"
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
             <div className="flex justify-end space-x-2">
               <button
-                onClick={() => setIsSessionModalOpen(false)}
-                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+          onClick={() => setIsSessionModalOpen(false)}
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
               >
-                Batal
+          Batal
               </button>
               <button
-                onClick={() => {
-                  setIsSessionModalOpen(false);
-                  handlePurchase();
-                }}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          onClick={() => {
+            setIsSessionModalOpen(false);
+            handlePurchase();
+          }}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
               >
-                Submit
+          Submit
               </button>
             </div>
           </div>

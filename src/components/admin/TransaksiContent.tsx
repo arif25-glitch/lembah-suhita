@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 interface AnalyticsData {
   id: string;
-  order_id: string;
+  sesi: string;
   order_date: string;
   username: string;
   value: number;
@@ -21,12 +21,12 @@ const TransaksiContent = () => {
         const data = await response.json();
         if (data.status) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const newAnalyticsData: AnalyticsData[] = data.data.map((item: any) => ({
-            id: String(item._id),
-            order_id: String(item.order_id),
+          const newAnalyticsData: AnalyticsData[] = data.data.map((item: any, key: any) => ({
+            id: key.toString(),
+            sesi: String(item.session),
             order_date: String(item.transaction_date),
-            username: String(item.customer_details.first_name),
-            value: Number(item.gross_amount),
+            username: String(item.username),
+            value: Number(item.totalPrice),
           }));
           setData(newAnalyticsData);
           setIsFetched(true);
@@ -65,7 +65,7 @@ const TransaksiContent = () => {
             <thead>
               <tr>
                 <th className="py-2 px-4 border-b">ID</th>
-                <th className="py-2 px-4 border-b">Order ID</th>
+                <th className="py-2 px-4 border-b">Sesi</th>
                 <th className="py-2 px-4 border-b">Tanggal Order</th>
                 <th className="py-2 px-4 border-b">Username</th>
                 <th className="py-2 px-4 border-b">Total Harga</th>
@@ -75,7 +75,7 @@ const TransaksiContent = () => {
               {data.map((data, index) => (
                 <tr key={data.id} className="text-center">
                   <td className="py-2 px-4 border-b">{index + 1}</td>
-                  <td className="py-2 px-4 border-b">{data.order_id}</td>
+                  <td className="py-2 px-4 border-b">{data.sesi}</td>
                   <td className="py-2 px-4 border-b">{data.order_date}</td>
                   <td className="py-2 px-4 border-b">{data.username}</td>
                   <td className="py-2 px-4 border-b">{formatCurrency(Number(data.value))}</td>

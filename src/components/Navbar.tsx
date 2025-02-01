@@ -159,13 +159,6 @@ const Navbar = () => {
                         <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-1 z-10">
                           <a
                             href="#"
-                            onClick={() => alert('Profile clicked')}
-                            className="block px-4 py-2 text-sm text-[#794422] hover:bg-gray-100"
-                          >
-                            Profile
-                          </a>
-                          <a
-                            href="#"
                             onClick={handleLogout}
                             className="block px-4 py-2 text-sm text-white bg-[#794422] hover:bg-[#8b5d3b]"
                           >
@@ -237,13 +230,6 @@ const Navbar = () => {
                       </button>
                       {dropdownOpen && (
                         <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-1 z-10">
-                          <a
-                            href="#"
-                            onClick={() => alert('Profile clicked')}
-                            className="block px-4 py-2 text-sm text-[#794422] hover:bg-gray-100"
-                          >
-                            Profile
-                          </a>
                           <a
                             href="#"
                             onClick={handleLogout}
