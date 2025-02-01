@@ -16,6 +16,7 @@ const AntrianContent: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [sessions, setSessions] = useState<string[]>([]);
   const [selectedSession, setSelectedSession] = useState<string>('');
+  const [sessionCapacity, setSessionCapacity] = useState<number>(10); // Example capacity
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -55,27 +56,11 @@ const AntrianContent: React.FC = () => {
         setData(tempData);
         setIsFetched(true);
         setIsLoading(false);
-
-        // Apply greedy algorithm to auto accept/reject
-        autoAcceptReject(tempData);
       }
     }
 
     fetching();
   }, []);
-
-  const autoAcceptReject = async (data: Antrian[]) => {
-    const sortedData = [...data].sort((a, b) => b.totalPemelian - a.totalPemelian);
-    const maxAcceptable = 10; // Example threshold for acceptance
-
-    for (const item of sortedData) {
-      if (item.totalPemelian >= maxAcceptable) {
-        await handleAccept(item.id);
-      } else {
-        await handleRemove(item.id);
-      }
-    }
-  };
 
   const handleAccept = async (id: string) => {
     setIsLoading(true);
@@ -121,9 +106,23 @@ const AntrianContent: React.FC = () => {
     }
   };
 
+  const autoAcceptReject = async () => {
+    const sortedData = [...data].sort((a, b) => b.totalPemelian - a.totalPemelian);
+    let acceptedCount = 0;
+
+    for (const item of sortedData) {
+      if (acceptedCount < sessionCapacity) {
+        await handleAccept(item.id);
+        acceptedCount++;
+      } else {
+        await handleRemove(item.id);
+      }
+    }
+  };
+
   const filteredData = selectedSession
-    ? data.filter(antrian => antrian.sesi === selectedSession)
-    : data;
+    ? data.filter(antrian => antrian.sesi === selectedSession && antrian.status === 'pending')
+    : data.filter(antrian => antrian.status === 'pending');
 
   return (
     <>
@@ -135,7 +134,13 @@ const AntrianContent: React.FC = () => {
         </div>
       )}
       <div>
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-between mb-4">
+          <button
+            onClick={autoAcceptReject}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Aktifkan Greedy Algorithm
+          </button>
           <select
             value={selectedSession}
             onChange={(e) => setSelectedSession(e.target.value)}

@@ -185,14 +185,14 @@ const MyCart = () => {
   const generatePDFReceipt = (transactionData: any) => {
     const doc = new jsPDF();
     doc.text('Lembah Suhita', 10, 10);
-    doc.text('Struk', 10, 10);
-    doc.text(`Nama: ${transactionData.username}`, 10, 20);
-    doc.text(`Tanggal Transaksi: ${transactionData.transaction_date}`, 10, 30);
-    doc.text(`Total Harga: Rp. ${transactionData.totalPrice}`, 10, 40);
-    doc.text('Paket:', 10, 50);
+    doc.text('Struk', 10, 20);
+    doc.text(`Nama: ${transactionData.username}`, 10, 30);
+    doc.text(`Tanggal Transaksi: ${transactionData.transaction_date}`, 10, 40);
+    doc.text(`Total Harga: Rp. ${transactionData.totalPrice}`, 10, 50);
+    doc.text('Paket:', 10, 60);
 
     transactionData.items.forEach((item: any, index: any) => {
-      doc.text(`${index + 1}. ${item.data.nama} - ${item.count} x Rp. ${item.data.harga}`, 10, 60 + (index * 10));
+      doc.text(`${index + 1}. ${item.data.nama} - ${item.count} x Rp. ${item.data.harga}`, 10, 70 + (index * 10));
     });
 
     doc.save('struk_lembah_suhita.pdf');
