@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
 interface Antrian {
@@ -8,6 +9,13 @@ interface Antrian {
   totalPemelian: number;
   status: string;
   sesi: string;
+  uniqueId: string;
+}
+
+interface fetchBuktiPembayaran {
+  id: string;
+  imageUrl: string;
+  uniqueId: string;
 }
 
 const AntrianContent: React.FC = () => {
@@ -17,6 +25,7 @@ const AntrianContent: React.FC = () => {
   const [sessions, setSessions] = useState<string[]>([]);
   const [selectedSession, setSelectedSession] = useState<string>('');
   const [sessionCapacity,] = useState<number>(10); // Example capacity
+  const [buktiPembayaran, setBuktiPembayaran] = useState<fetchBuktiPembayaran[]>([]);
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -38,6 +47,23 @@ const AntrianContent: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const fetchBuktiPembayaran = async () => {
+      try {
+        const response = await fetch('/api/bukti-pembayaran');
+        const result = await response.json();
+
+        if (result.status) {
+          setBuktiPembayaran(result.data);
+        }
+      } catch (error) {
+        console.error('Error fetching bukti pembayaran:', error);
+      }
+    };
+
+    fetchBuktiPembayaran();
+  }, [])
+
+  useEffect(() => {
     const fetching = async () => {
       const result = await fetch('/api/antrian/read_all');
       const data = await result.json();
@@ -52,6 +78,7 @@ const AntrianContent: React.FC = () => {
           totalPemelian: item.totalPurchased,
           status: item.status,
           sesi: item.session,
+          uniqueId: item.uniqueId,
         }));
         setData(tempData);
         setIsFetched(true);
@@ -163,6 +190,7 @@ const AntrianContent: React.FC = () => {
                 <th className="py-2 px-4 border-b">Jam</th>
                 <th className="py-2 px-4 border-b">Jumlah</th>
                 <th className="py-2 px-4 border-b">Kode</th>
+                <th className="py-2 px-4 border-b">Bukti Pembayaran</th>
                 <th className="py-2 px-4 border-b">Aksi</th>
               </tr>
             </thead>
@@ -174,6 +202,16 @@ const AntrianContent: React.FC = () => {
                   <td className="py-2 px-4 border-b">{antrian.tanggal}</td>
                   <td className="py-2 px-4 border-b">{antrian.totalPemelian}</td>
                   <td className="py-2 px-4 border-b">{antrian.id}</td>
+                  <td className="py-2 px-4 border-b">
+                    {buktiPembayaran.find(item => item.uniqueId === antrian.uniqueId) ? <>
+                      <Image
+                        src={buktiPembayaran.find(item => item.uniqueId === antrian.uniqueId)?.imageUrl || '/path/to/default/image.jpg'}
+                        alt={antrian.nama}
+                        width={50}
+                        height={50}
+                        />
+                    </> : 'Belum Upload'}
+                  </td>
                   <td className="py-2 px-4 border-b space-x-2">
                     <button 
                       onClick={() => handleAccept(antrian.id)}

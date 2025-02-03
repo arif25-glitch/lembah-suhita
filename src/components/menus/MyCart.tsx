@@ -37,6 +37,7 @@ const MyCart = () => {
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [uniqueId, setUniqueId] = useState('');
 
   useEffect(() => {
     const username = Cookies.get('username');
@@ -163,6 +164,7 @@ const MyCart = () => {
   const handlePurchase = async () => {
     if (!selectedSession) {
       setIsSessionModalOpen(true);
+      setUniqueId(Math.random().toString(36).substr(2, 9));
       return;
     }
 
@@ -204,6 +206,7 @@ const MyCart = () => {
     const formData = new FormData();
     formData.append('image', selectedImage);
     formData.append('username', usernameState);
+    formData.append('uniqueId', uniqueId);
 
     try {
       setIsLoading(true);
@@ -227,6 +230,7 @@ const MyCart = () => {
           servedData: selectedDate,
           status: "pending",
           session: selectedSession,
+          uniqueId: uniqueId,
         };
 
         fetch('/api/transaction', {

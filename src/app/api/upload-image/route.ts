@@ -5,6 +5,7 @@ export async function POST(req: Request): Promise<Response> {
   const form = await req.formData();
   const file = form.get("image") as File;
   const nama = form.get("username") as string;
+  const uniqueId = form.get("uniqueId") as string;
 
   const arrayBuffer = await file.arrayBuffer();
   const fileBuffer = Buffer.from(arrayBuffer);
@@ -33,6 +34,7 @@ export async function POST(req: Request): Promise<Response> {
           const dbResult = await collection.insertOne({
             'name': sanitizedNama,
             'imageUrl': result?.url,
+            'uniqueId': uniqueId,
           });
           resolve(new Response(JSON.stringify({ status: true, data: dbResult }), {
             headers: { 'Content-Type': 'application/json' },
