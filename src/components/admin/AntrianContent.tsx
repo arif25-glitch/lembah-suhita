@@ -16,7 +16,7 @@ const AntrianContent: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [sessions, setSessions] = useState<string[]>([]);
   const [selectedSession, setSelectedSession] = useState<string>('');
-  const [sessionCapacity, setSessionCapacity] = useState<number>(10); // Example capacity
+  const [sessionCapacity,] = useState<number>(10); // Example capacity
 
   useEffect(() => {
     const fetchSessions = async () => {
