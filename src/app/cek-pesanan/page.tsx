@@ -10,6 +10,7 @@ export default function CekPesanan() {
     totalPurchased: number;
     totalPrice: string;
     status: string;
+    uniqueId: string;
   }
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -34,6 +35,7 @@ export default function CekPesanan() {
       if (data.status) {
         const dataOrders = data.data;
         setOrders(dataOrders);
+        console.log(dataOrders);
       } else {
         setIsNoDataModalOpen(true);
       }
@@ -74,6 +76,7 @@ export default function CekPesanan() {
                 <th className="py-3 px-5 border-b text-center">Total Pemesanan</th>
                 <th className="py-3 px-5 border-b text-center">Total Harga</th>
                 <th className="py-3 px-5 border-b text-center">Status</th>
+                <th className="py-3 px-5 border-b text-center">Tiket</th>
               </tr>
             </thead>
             <tbody>
@@ -85,6 +88,9 @@ export default function CekPesanan() {
                   <td className="py-3 px-5 border-b text-center">{order.totalPurchased}</td>
                   <td className="py-3 px-5 border-b text-center">{order.totalPrice}</td>
                   <td className={`py-3 px-5 border-b text-center ${getStatusColor(order.status)}`}>{order.status}</td>
+                  <td className="py-3 px-5 border-b text-center">{(order.status == 'pending' || order.status == 'reject') ? 'Belum Ada' : <>
+                    <a href={`/tiket/${order.uniqueId}`} target="_blank" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-300">Lihat Tiket</a>
+                  </>}</td>
                 </tr>
               ))}
             </tbody>
