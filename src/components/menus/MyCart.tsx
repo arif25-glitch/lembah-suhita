@@ -218,7 +218,7 @@ const MyCart = () => {
       if (data.status) {
         setIsImageModalOpen(false);
         setSelectedImage(null);
-        setIsLoading(false);
+        setIsLoading(true);
 
         // Implement purchase logic here
         const dataPurchasing = {
@@ -270,7 +270,7 @@ const MyCart = () => {
     <>
       {
         isLoading && (
-          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-[10000]">
             <div className="bg-white p-6 rounded-md shadow-md text-center">
               <p>Loading...</p>
             </div>
