@@ -30,8 +30,8 @@ const MyCart = () => {
   const [isPurchase, setIsPurchase] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isServed, setIsServed] = useState(false);
-  const [sessions, setSessions] = useState<string[]>([]);
-  const [selectedSession, setSelectedSession] = useState<string>('');
+  const [, setSessions] = useState<string[]>([]);
+  const [selectedSession, ] = useState<string>('');
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
@@ -129,7 +129,6 @@ const MyCart = () => {
             )
           );
           setIsLoading(false);
-          window.location.href = "/";
         }
       });
   };
@@ -152,7 +151,6 @@ const MyCart = () => {
               .filter(item => item.count > 0)
           );
           setIsLoading(false);
-          window.location.href = "/";
         }
       });
   };
@@ -306,9 +304,9 @@ const MyCart = () => {
         </div>
       )}
       <div className="p-4">
-        <h2 className="text-2xl font-bold mb-4">My Cart</h2>
+        <h2 className="text-2xl font-bold mb-4">Keranjang Pesanan Ku</h2>
         {cartItems.length === 0 ? (
-          <p>Tidak ada produk pada keranjang saat ini</p>
+          <p>Tidak ada paket pada keranjang saat ini</p>
         ) : (
           <ul>
             {cartItems.map(item => (
@@ -358,19 +356,7 @@ const MyCart = () => {
       {isSessionModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
           <div className="bg-white p-6 rounded-md shadow-md text-center">
-            <h2 className="text-xl mb-4">Pilih Sesi dan Tanggal</h2>
-            <select
-              value={selectedSession}
-              onChange={(e) => setSelectedSession(e.target.value)}
-              className="px-4 py-2 border rounded w-full mb-4"
-            >
-              <option value="">Pilih Sesi</option>
-              {sessions.map((session, index) => (
-          <option key={index} value={session}>
-            {session}
-          </option>
-              ))}
-            </select>
+            <h2 className="text-xl mb-4">Pilih Tanggal</h2>
             <input
               type="date"
               className="px-4 py-2 border rounded w-full mb-4"
@@ -399,15 +385,15 @@ const MyCart = () => {
 
       {isQrModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
-          <div className="bg-white p-6 rounded-md shadow-md text-center relative">
+          <div className="bg-white p-6 rounded-md shadow-md text-center relative max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Scan QR Code untuk Pembayaran</h2>
             <div className="flex justify-center">
               <Image 
-              src="/img/qris/qris1hd.jpg" 
-              alt="QR Code" 
-              width={200}
-              height={200}
-              className="object-cover" 
+                src="/img/qris/qris1hd.jpg" 
+                alt="QR Code" 
+                width={500}
+                height={500}
+                className="object-cover" 
               />
             </div>
             <button
@@ -432,7 +418,7 @@ const MyCart = () => {
       {isImageModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
           <div className="bg-white p-6 rounded-md shadow-md text-center">
-            <h2 className="text-xl mb-4">Upload Bukti Pembayaran</h2>
+            <h2 className="text-xl mb-4">Upload Bukti Pembayaran *Maks file: 10 MB</h2>
             <input
               type="file"
               accept="image/*"

@@ -1,93 +1,93 @@
-# Toko Arabic Parfume
+# Lembah Suhita
 
-Welcome to **Toko Arabic Parfume**, your destination for the finest Arabic perfumes crafted with the highest quality ingredients.
+Selamat datang di **Lembah Suhita**, tujuan Anda untuk pemesanan tiket wisata di Lembah Suhita.
 
-![Logo](public/img/logos/logo.png)
+![Logo](public/img/assets/icon.png)
 
-## Table of Contents
+## Daftar Isi
 
-- [Introduction](#introduction)
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+- [Pendahuluan](#pendahuluan)
+- [Fitur](#fitur)
+- [Memulai](#memulai)
+- [Penggunaan](#penggunaan)
+- [Kontribusi](#kontribusi)
+- [Lisensi](#lisensi)
+- [Kontak](#kontak)
 
-## Introduction
+## Pendahuluan
 
-At **Toko Arabic Parfume**, we offer an exclusive collection of Arabic perfumes that embody the essence of luxury. Our perfumes are crafted with the finest ingredients to provide you with an unforgettable fragrance experience.
+Di **Lembah Suhita**, kami menawarkan layanan pemesanan tiket wisata yang mudah dan cepat. Nikmati pengalaman wisata yang tak terlupakan di Lembah Suhita dengan memesan tiket melalui website kami.
 
-## Features
+## Fitur
 
-- **Exclusive Collection**: Discover a wide range of unique and luxurious Arabic perfumes.
-- **High-Quality Ingredients**: Our perfumes are made with the highest quality ingredients.
-- **User-Friendly Interface**: Enjoy a seamless shopping experience with our modern and intuitive website.
-- **Responsive Design**: Access our website on any device, whether it's a desktop, tablet, or mobile.
+- **Pemesanan Tiket Mudah**: Pesan tiket wisata Anda dengan mudah melalui website kami.
+- **Informasi Lengkap**: Dapatkan informasi lengkap tentang wisata di Lembah Suhita.
+- **Antarmuka Ramah Pengguna**: Nikmati pengalaman berbelanja yang mulus dengan situs web kami yang modern dan intuitif.
+- **Desain Responsif**: Akses situs web kami di perangkat apa pun, baik itu desktop, tablet, atau ponsel.
 
-## Getting Started
+## Memulai
 
-To get started with the project, follow these steps:
+Untuk memulai proyek ini, ikuti langkah-langkah berikut:
 
-1. Clone the repository:
+1. Clone repositori:
    ```bash
-   git clone https://github.com/yourusername/tokoarabicparfume.git
+   git clone https://github.com/yourusername/lembahsuhita.git
    ```
-2. Navigate to the project directory:
+2. Masuk ke direktori proyek:
    ```bash
-   cd tokoarabicparfume
+   cd lembahsuhita
    ```
-3. Install the dependencies:
+3. Instal dependensi:
    ```bash
    npm install
-   # or
+   # atau
    yarn install
-   # or
+   # atau
    pnpm install
    ```
-4. Run the development server:
+4. Jalankan server pengembangan:
    ```bash
    npm run dev
-   # or
+   # atau
    yarn dev
-   # or
+   # atau
    pnpm dev
    ```
-5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Buka [http://localhost:3000](http://localhost:3000) dengan browser Anda untuk melihat hasilnya.
 
-## Usage
+## Penggunaan
 
-You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
+Anda dapat mulai mengedit halaman dengan memodifikasi `src/app/page.tsx`. Halaman akan diperbarui secara otomatis saat Anda mengedit file.
 
-This project uses [Tailwind CSS](https://tailwindcss.com) for styling and [Next.js](https://nextjs.org) for the framework.
+Proyek ini menggunakan [Tailwind CSS](https://tailwindcss.com) untuk styling dan [Next.js](https://nextjs.org) untuk framework.
 
-## Contributing
+## Kontribusi
 
-We welcome contributions to improve our project. To contribute, follow these steps:
+Kami menyambut kontribusi untuk meningkatkan proyek kami. Untuk berkontribusi, ikuti langkah-langkah berikut:
 
-1. Fork the repository.
-2. Create a new branch:
+1. Fork repositori.
+2. Buat cabang baru:
    ```bash
-   git checkout -b feature/your-feature-name
+   git checkout -b feature/nama-fitur-anda
    ```
-3. Make your changes and commit them:
+3. Lakukan perubahan Anda dan commit:
    ```bash
-   git commit -m "Add your commit message"
+   git commit -m "Tambahkan pesan commit Anda"
    ```
-4. Push to the branch:
+4. Push ke cabang:
    ```bash
-   git push origin feature/your-feature-name
+   git push origin feature/nama-fitur-anda
    ```
-5. Open a pull request.
+5. Buka pull request.
 
-## License
+## Lisensi
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+Proyek ini dilisensikan di bawah Lisensi MIT. Lihat file [LICENSE](LICENSE) untuk informasi lebih lanjut.
 
-## Contact
+## Kontak
 
-For any inquiries, please contact us at [info@tokoarabicparfume.com](mailto:info@tokoarabicparfume.com).
+Untuk pertanyaan apa pun, silakan hubungi kami di [info@lembahsuhita.com](mailto:info@lembahsuhita.com).
 
 ---
 
-Made with ❤️ by Toko Arabic Parfume Team
+Dibuat dengan ❤️ oleh Tim Lembah Suhita

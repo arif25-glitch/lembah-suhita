@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa';
 
 interface Session {
   _id: string;
@@ -13,7 +13,6 @@ interface Session {
 const SessionContent = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [jumlahPengunjung, setJumlahPengunjung] = useState(0);
   const [isLoading, setIsLoading] = useState(false);  
   const [formData, setFormData] = useState({
     id: 0,
@@ -21,7 +20,6 @@ const SessionContent = () => {
     kosong: 0,
     terisi: 0
   });
-  const [isEdit, setIsEdit] = useState(false);
 
   // Fetch sessions from API
   useEffect(() => {
@@ -44,8 +42,9 @@ const SessionContent = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const url = isEdit ? `/api/session/edit` : '/api/session/create';
+      const url = '/api/session/create';
       const method = "POST";
+      const constantJumlahPengunjung = 200; // Use constant 200
 
       await fetch(url, {
         method: method,
@@ -54,7 +53,7 @@ const SessionContent = () => {
         },
         body: JSON.stringify({
           nama: formData.name,
-          jumlahPengunjung: jumlahPengunjung,
+          jumlahPengunjung: constantJumlahPengunjung,
         }),
       });
 
@@ -79,7 +78,6 @@ const SessionContent = () => {
 
         const data = await result.json();
         if (data.status) {
-          setIsEdit(false);
           window.location.reload();
         }
         fetchSessions();
@@ -89,12 +87,6 @@ const SessionContent = () => {
     }
   };
 
-  // const handleEdit = (session: Session) => {
-  //   setFormData(session);
-  //   setIsEdit(true);
-  //   setShowModal(true);
-  // };
-
   const resetForm = () => {
     setFormData({
       id: 0,
@@ -102,7 +94,6 @@ const SessionContent = () => {
       kosong: 0,
       terisi: 0
     });
-    setIsEdit(false);
   };
 
   return (
@@ -118,7 +109,7 @@ const SessionContent = () => {
       }
       <div className="container mx-auto p-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Manage Sesi</h1>
+          <h1 className="text-2xl font-bold">Manage Jadwal</h1>
           <button
             onClick={() => {
               resetForm();
@@ -126,7 +117,7 @@ const SessionContent = () => {
             }}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
-            Tambah Sesi Baru
+            Tambah Jadawl Baru
           </button>
         </div>
 
@@ -156,12 +147,6 @@ const SessionContent = () => {
                   </td>
                   <td className="px-6 py-4 border-b">
                     <button
-                      // onClick={() => handleEdit(session)}
-                      className="text-blue-500 hover:text-blue-700 mr-4"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
                       onClick={() => handleDelete(session._id)}
                       className="text-red-500 hover:text-red-700"
                     >
@@ -177,27 +162,14 @@ const SessionContent = () => {
         {showModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded-lg max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4">
-                {isEdit ? 'Edit Session' : 'Add New Session'}
-              </h2>
+              <h2 className="text-xl font-bold mb-4">Tambah Jadwal Baru</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <label className="block mb-2">Nama</label>
+                  <label className="block mb-2">Jadwal</label>
                   <input
-                    type="text"
+                    type="date"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full p-2 border rounded"
-                    required
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block mb-2">Jumlah Pengunjung</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={jumlahPengunjung}
-                    onChange={(e) => setJumlahPengunjung(parseInt(e.target.value))}
                     className="w-full p-2 border rounded"
                     required
                   />
@@ -214,7 +186,7 @@ const SessionContent = () => {
                     type="submit"
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                   >
-                    {isEdit ? 'Update' : 'Save'}
+                    Save
                   </button>
                 </div>
               </form>

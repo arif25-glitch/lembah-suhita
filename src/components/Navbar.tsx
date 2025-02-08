@@ -88,8 +88,6 @@ const Navbar = () => {
     }
   };
 
-  // const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-
   return (
     <>
       <nav className="bg-white shadow-md sticky top-0 z-50">

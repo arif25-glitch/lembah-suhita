@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import React, { useState } from 'react';
-import { FaTachometerAlt, FaUsers, FaSignOutAlt, FaChartBar, FaClock } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaSignOutAlt, FaChartBar, FaClock, FaNewspaper, FaWrench, FaBullhorn } from 'react-icons/fa';
 import { MdPeople } from 'react-icons/md';
 import OverviewContent from '@/components/admin/OverviewContent';
 import DashboardContent from '@/components/admin/DashboardContent';
@@ -11,7 +11,11 @@ import TransaksiContent from '@/components/admin/TransaksiContent';
 import UsersContent from '@/components/admin/UsersContent';
 import AntrianContent from '@/components/admin/AntrianContent';
 import SessionContent from '@/components/admin/SessionContent';
-// ...existing code...
+import KelolaBeritaContent from '@/components/admin/KelolaBeritaContent';
+import KelolaPengumumanContent from '@/components/admin/KelolaPengumumanContent';
+import KelolaFiturContent from '@/components/admin/KelolaFiturContent';
+import KelolaPaketContent from '@/components/admin/KelolaPaketContent';
+import KelolaPromoContent from '@/components/admin/KelolaPromoContent';
 
 const AdminPage = () => {
   const [selectedNav, setSelectedNav] = useState('dashboard');
@@ -29,11 +33,20 @@ const AdminPage = () => {
         return <AntrianContent />;
       case 'session':
         return <SessionContent />;
+      case 'kelolaBerita':
+        return <KelolaBeritaContent />;
+      case 'kelolaFitur':
+        return <KelolaFiturContent />;
+      case 'kelolaPengumuman':
+        return <KelolaPengumumanContent />;
+      case 'kelolaPaket':
+        return <KelolaPaketContent />;
+      case 'kelolaPromo':
+        return <KelolaPromoContent />;
       default:
         return <OverviewContent />;
     }
   };
-
 
   useEffect(() => {
     const username = Cookies.get('username');
@@ -93,7 +106,7 @@ const AdminPage = () => {
                 onClick={() => setSelectedNav('antrian')} 
                 className={`flex items-center py-2 px-4 rounded hover:bg-gray-700 ${selectedNav === 'antrian' ? 'bg-[#794422]' : ''}`}>
                 <MdPeople className="mr-2" />
-                <span className=" md:inline">Greedy</span>
+                <span className=" md:inline">Pesanan Masuk</span>
               </a>
             </li>
             <li className="w-full">
@@ -101,7 +114,51 @@ const AdminPage = () => {
                 onClick={() => setSelectedNav('session')} 
                 className={`flex items-center py-2 px-4 rounded hover:bg-gray-700 ${selectedNav === 'session' ? 'bg-[#794422]' : ''}`}>
                 <FaClock className="mr-2" />
-                <span className=" md:inline">Sesi</span>
+                <span className=" md:inline">Kelola Jadwal</span>
+              </a>
+            </li>
+            <li className="w-full">
+              <a
+                href="#kelolaBerita"
+                onClick={() => setSelectedNav('kelolaBerita')}
+                className={`flex items-center py-2 px-4 rounded hover:bg-gray-700 ${selectedNav === 'kelolaBerita' ? 'bg-[#794422]' : ''}`}
+              >
+                <FaNewspaper className="mr-2" />
+                <span className="md:inline">Kelola Berita</span>
+              </a>
+            </li>
+            <li className="w-full">
+              <a
+                href="#kelolaFitur"
+                onClick={() => setSelectedNav('kelolaFitur')}
+                className={`flex items-center py-2 px-4 rounded hover:bg-gray-700 ${selectedNav === 'kelolaFitur' ? 'bg-[#794422]' : ''}`}
+              >
+                <FaWrench className="mr-2" />
+                <span className="md:inline">Kelola Fitur</span>
+              </a>
+            </li>
+            <li className="w-full">
+              <a
+                href="#kelolaPengumuman"
+                onClick={() => setSelectedNav('kelolaPengumuman')}
+                className={`flex items-center py-2 px-4 rounded hover:bg-gray-700 ${selectedNav === 'kelolaPengumuman' ? 'bg-[#794422]' : ''}`}
+              >
+                <FaBullhorn className="mr-2" />
+                <span className="md:inline">Kelola Pengumuman</span>
+              </a>
+            </li>
+            <li className="w-full">
+              <a href="#kelolaPaket" onClick={() => setSelectedNav('kelolaPaket')}
+                className={`flex items-center py-2 px-4 rounded hover:bg-gray-700 ${selectedNav === 'kelolaPaket' ? 'bg-[#794422]' : ''}`}>
+                <FaTachometerAlt className="mr-2" />
+                <span className="md:inline">Dashboard Paket</span>
+              </a>
+            </li>
+            <li className="w-full">
+              <a href="#kelolaPromo" onClick={() => setSelectedNav('kelolaPromo')}
+                className={`flex items-center py-2 px-4 rounded hover:bg-gray-700 ${selectedNav === 'kelolaPromo' ? 'bg-[#794422]' : ''}`}>
+                <FaChartBar className="mr-2" />
+                <span className="md:inline">Kelola Promo</span>
               </a>
             </li>
             <li className="w-full">
@@ -129,7 +186,5 @@ const handleLogout = () => {
   });
   window.location.href = "/";
 };
-
-// ...existing code...
 
 export default AdminPage;

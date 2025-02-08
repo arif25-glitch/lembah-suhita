@@ -3,11 +3,12 @@ import { ObjectId } from "mongodb";
 
 export async function POST(req: Request) {
   try {
-    const { id } = await req.json();
+    const { orderId } = await req.json();
     await client.connect();
     const database = client.db('lembah_suhita');
     const collection = database.collection('antrian');
-    const result = await collection.deleteOne({ _id: new ObjectId(id) });
+    console.log(orderId);
+    const result = await collection.deleteOne({ _id: new ObjectId(orderId) });
 
     if (result.deletedCount === 1) {
       return new Response(JSON.stringify({ status: true, message: 'Transaction removed successfully' }), {
