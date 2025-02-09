@@ -254,6 +254,15 @@ const MyCart = () => {
     }
   };
 
+  // Add sortedCartItems: sort first by date (newest first) then by count (descending)
+  const sortedCartItems = [...cartItems].sort((a, b) => {
+    const dateA = new Date((a as any).dateAdded || 0);
+    const dateB = new Date((b as any).dateAdded || 0);
+    if (dateA > dateB) return -1;
+    if (dateA < dateB) return 1;
+    return b.count - a.count;
+  });
+
   if (!isLoggedIn) {
     return (
       <div className="p-4">
@@ -309,7 +318,7 @@ const MyCart = () => {
           <p>Tidak ada paket pada keranjang saat ini</p>
         ) : (
           <ul>
-            {cartItems.map(item => (
+            {sortedCartItems.map(item => (
               <li key={item.data._id} className="flex justify-between items-center mb-2">
                 {/* <img src={item.data.imageUrl} alt={item.data.name} className="w-16 h-16 object-cover rounded mr-4" /> */}
                 <div className="flex flex-col flex-grow">
