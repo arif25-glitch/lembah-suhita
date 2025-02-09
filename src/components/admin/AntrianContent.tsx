@@ -150,9 +150,11 @@ const AntrianContent: React.FC = () => {
   };
   // --------------------- Sampai Sini -------------------------
 
-  const filteredData = selectedSession
+  // Update filtered data: filter and sort in descending order based on 'totalPemelian'
+  const filteredData = selectedSession 
     ? data.filter(antrian => antrian.sesi === selectedSession && antrian.status === 'pending')
     : data.filter(antrian => antrian.status === 'pending');
+  const sortedFilteredData = filteredData.sort((a, b) => b.totalPemelian - a.totalPemelian);
 
   return (
     <>
@@ -198,7 +200,7 @@ const AntrianContent: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((antrian, index) => (
+              {sortedFilteredData.map((antrian, index) => (
                 <tr key={antrian.id} className="text-center">
                   <td className="py-2 px-4 border-b">{index + 1}</td>
                   <td className="py-2 px-4 border-b">{antrian.nama}</td>
