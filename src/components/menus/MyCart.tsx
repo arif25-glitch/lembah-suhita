@@ -38,6 +38,7 @@ const MyCart = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [uniqueId, setUniqueId] = useState('');
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   useEffect(() => {
     const username = Cookies.get('username');
@@ -165,9 +166,18 @@ const MyCart = () => {
       setUniqueId(Math.random().toString(36).substr(2, 9));
       return;
     }
+    // Validate date difference: purchase date must be at least 7 days before session date
+    const purchaseDate = new Date(selectedDate);
+    const sessionDate = new Date(selectedSession);
+    const diffDays = (sessionDate.getTime() - purchaseDate.getTime()) / (1000 * 3600 * 24);
+    if (diffDays < 7) {
+      setShowErrorModal(true);
+      setSelectedSession('');
+      return;
+    }
 
     setIsServed(true);
-    setIsQrModalOpen(true); // Show QR code modal
+    setIsQrModalOpen(true); // Execute purchase logic
   };
 
   const afterPurchase = () => {
@@ -365,19 +375,20 @@ const MyCart = () => {
       {isSessionModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
           <div className="bg-white p-6 rounded-md shadow-md text-center">
-            <h2 className="text-xl mb-4">Pilih Sesi dan Tanggal</h2>
+            <h2 className="text-xl mb-4">Pilih Tanggal Wisata</h2>
             <select
               value={selectedSession}
               onChange={(e) => setSelectedSession(e.target.value)}
               className="px-4 py-2 border rounded w-full mb-4"
             >
-              <option value="">Pilih Sesi</option>
+              <option value="">Pilih Tanggal</option>
               {sessions.map((session, index) => (
-          <option key={index} value={session}>
+                <option key={index} value={session}>
             {session}
           </option>
               ))}
             </select>
+            <h2 className="text-xl mb-4">Pilih Tanggal Pesan</h2>
             <input
               type="date"
               className="px-4 py-2 border rounded w-full mb-4"
@@ -460,6 +471,20 @@ const MyCart = () => {
                 Submit
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showErrorModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-md text-center">
+            <p>Tiket hanya bisa dibeli h-7</p>
+            <button
+              onClick={() => setShowErrorModal(false)}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md mt-4"
+            >
+              Oke
+            </button>
           </div>
         </div>
       )}

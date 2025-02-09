@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa';
 
 interface Session {
   _id: string;
@@ -20,9 +20,7 @@ const SessionContent = () => {
     kosong: 0,
     terisi: 0
   });
-  const [isEdit, setIsEdit] = useState(false);
 
-  // Fetch sessions from API
   useEffect(() => {
     fetchSessions();
   }, []);
@@ -43,12 +41,12 @@ const SessionContent = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const url = isEdit ? `/api/session/edit` : '/api/session/create';
+      const url = '/api/session/create';
       const method = "POST";
-      const constantJumlahPengunjung = 200; // Use constant 200
+      const constantJumlahPengunjung = 200;
 
       await fetch(url, {
-        method: method,
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -69,7 +67,7 @@ const SessionContent = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Apakah Kamu Ingin Menghapus Sesi Ini?')) {
+    if (confirm('Apakah Kamu Ingin Menghapus Jadwal Ini?')) {
       setIsLoading(true);
       try {
         const result = await fetch(`/api/session/delete`, {
@@ -79,7 +77,6 @@ const SessionContent = () => {
 
         const data = await result.json();
         if (data.status) {
-          setIsEdit(false);
           window.location.reload();
         }
         fetchSessions();
@@ -89,12 +86,6 @@ const SessionContent = () => {
     }
   };
 
-  // const handleEdit = (session: Session) => {
-  //   setFormData(session);
-  //   setIsEdit(true);
-  //   setShowModal(true);
-  // };
-
   const resetForm = () => {
     setFormData({
       id: 0,
@@ -102,7 +93,6 @@ const SessionContent = () => {
       kosong: 0,
       terisi: 0
     });
-    setIsEdit(false);
   };
 
   return (
@@ -156,14 +146,8 @@ const SessionContent = () => {
                   </td>
                   <td className="px-6 py-4 border-b">
                     <button
-                      // onClick={() => handleEdit(session)}
-                      className="text-blue-500 hover:text-blue-700 mr-4"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(session._id)}
                       className="text-red-500 hover:text-red-700"
+                      onClick={() => handleDelete(session._id)}
                     >
                       <FaTrash />
                     </button>
@@ -178,13 +162,13 @@ const SessionContent = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-8 rounded-lg max-w-md w-full">
               <h2 className="text-xl font-bold mb-4">
-                {isEdit ? 'Edit Jadwal' : 'Tambah Jadwal Baru'}
+                Tambah Jadwal Baru
               </h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label className="block mb-2">Jadwal</label>
                   <input
-                    type="date" // changed from text to date input
+                    type="date"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full p-2 border rounded"
@@ -203,7 +187,7 @@ const SessionContent = () => {
                     type="submit"
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                   >
-                    {isEdit ? 'Update' : 'Save'}
+                    Save
                   </button>
                 </div>
               </form>
