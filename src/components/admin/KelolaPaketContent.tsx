@@ -18,11 +18,11 @@ const KelolaPaketContent: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Modal state management placeholders
-  const [isTambahOpen, setIsTambahOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isHapusOpen, setIsHapusOpen] = useState(false);
-  const [selectedPaket, setSelectedPaket] = useState<Paket | null>(null);
-  const [dataSelectedHapus, setDataSelectedHapus] = useState('');
+  const [, setIsTambahOpen] = useState(false);
+  const [, setIsEditOpen] = useState(false);
+  const [, setIsHapusOpen] = useState(false);
+  const [, setSelectedPaket] = useState<Paket | null>(null);
+  const [, setDataSelectedHapus] = useState('');
 
   const handleEdit = (paket: Paket) => {
     setSelectedPaket(paket);
@@ -35,26 +35,26 @@ const KelolaPaketContent: React.FC = () => {
     setIsHapusOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('/api/paket/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      });
-      const result = await response.json();
-      if (result.status) {
-        setData(prev => prev.filter(item => item.id !== id));
-      } else {
-        alert('Gagal menghapus paket');
-      }
-    } catch (error) {
-      console.error(error);
-    }
-    setIsLoading(false);
-    setIsHapusOpen(false);
-  };
+  // const handleDelete = async (id: string) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetch('/api/paket/delete', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ id })
+  //     });
+  //     const result = await response.json();
+  //     if (result.status) {
+  //       setData(prev => prev.filter(item => item.id !== id));
+  //     } else {
+  //       alert('Gagal menghapus paket');
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   setIsLoading(false);
+  //   setIsHapusOpen(false);
+  // };
 
   useEffect(() => {
     const fetchData = async () => {
