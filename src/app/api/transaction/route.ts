@@ -7,39 +7,39 @@ export async function POST(req: Request) {
     await client.connect();
     const database = client.db('lembah_suhita');
     const antrianCollection = database.collection('antrian');
-    const sessionsCollection = database.collection('sessions');
+    // const sessionsCollection = database.collection('sessions');
 
     // Check session availability
-    const session = await sessionsCollection.findOne({ name: data.session });
+    // const session = await sessionsCollection.findOne({ name: data.session });
 
-    if (!session) {
-      return new Response(JSON.stringify({ 
-        status: false, 
-        message: 'Session not found' 
-      }), {
-        headers: { 'Content-Type': 'application/json' },
-        status: 404
-      });
-    }
+    // if (!session) {
+    //   return new Response(JSON.stringify({ 
+    //     status: false, 
+    //     message: 'Session not found' 
+    //   }), {
+    //     headers: { 'Content-Type': 'application/json' },
+    //     status: 404
+    //   });
+    // }
 
-    if (session.terisi >= session.kosong) {
-      return new Response(JSON.stringify({ 
-        status: false, 
-        message: 'Session is full' 
-      }), {
-        headers: { 'Content-Type': 'application/json' },
-        status: 400
-      });
-    }
+    // if (session.terisi >= session.kosong) {
+    //   return new Response(JSON.stringify({ 
+    //     status: false, 
+    //     message: 'Session is full' 
+    //   }), {
+    //     headers: { 'Content-Type': 'application/json' },
+    //     status: 400
+    //   });
+    // }
 
     // Insert transaction
     const result = await antrianCollection.insertOne(data);
 
-    // Update session terisi count
-    await sessionsCollection.updateOne(
-      { name: data.session },
-      { $inc: { terisi: 1 } }
-    );
+    // // Update session terisi count
+    // await sessionsCollection.updateOne(
+    //   { name: data.session },
+    //   { $inc: { terisi: 1 } }
+    // );
 
     return new Response(JSON.stringify({ 
       status: true, 
