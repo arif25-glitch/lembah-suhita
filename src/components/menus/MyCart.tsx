@@ -30,7 +30,7 @@ const MyCart = () => {
   const [isPurchase, setIsPurchase] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isServed, setIsServed] = useState(false);
-  const [sessions, setSessions] = useState<string[]>([]);
+  const [, setSessions] = useState<string[]>([]);
   const [selectedSession, setSelectedSession] = useState<string>('');
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
@@ -161,13 +161,23 @@ const MyCart = () => {
   };
 
   const handlePurchase = async () => {
+    setSelectedSession('random'); // Reset selectedSession
     if (!selectedSession) {
       setIsSessionModalOpen(true);
       setUniqueId(Math.random().toString(36).substr(2, 9));
       return;
     }
-    // Validate date difference: purchase date must be at least 7 days before session date
+    // New: Validate selectedDate relative to today
+    const today = new Date();
     const purchaseDate = new Date(selectedDate);
+    const diffFromToday = (purchaseDate.getTime() - today.getTime()) / (1000 * 3600 * 24);
+    if (diffFromToday > 7) { // selectedDate is more than 7 days from today
+      setShowErrorModal(true);
+      setSelectedSession('');
+      return;
+    }
+    
+    // Existing: Validate difference between session date and selectedDate
     const sessionDate = new Date(selectedSession);
     const diffDays = (sessionDate.getTime() - purchaseDate.getTime()) / (1000 * 3600 * 24);
     if (diffDays < 7) {
@@ -175,7 +185,7 @@ const MyCart = () => {
       setSelectedSession('');
       return;
     }
-
+    
     setIsServed(true);
     setIsQrModalOpen(true); // Execute purchase logic
   };
@@ -375,8 +385,8 @@ const MyCart = () => {
       {isSessionModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
           <div className="bg-white p-6 rounded-md shadow-md text-center">
-            <h2 className="text-xl mb-4">Pilih Tanggal Wisata</h2>
-            <select
+            {/* <h2 className="text-xl mb-4">Pilih Tanggal Wisata</h2> */}
+            {/* <select
               value={selectedSession}
               onChange={(e) => setSelectedSession(e.target.value)}
               className="px-4 py-2 border rounded w-full mb-4"
@@ -387,7 +397,7 @@ const MyCart = () => {
             {session}
           </option>
               ))}
-            </select>
+            </select> */}
             <h2 className="text-xl mb-4">Pilih Tanggal Pesan</h2>
             <input
               type="date"
