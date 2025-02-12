@@ -30,15 +30,15 @@ const MyCart = () => {
   const [isPurchase, setIsPurchase] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isServed, setIsServed] = useState(false);
-  const [, setSessions] = useState<string[]>([]);
-  const [selectedSession, setSelectedSession] = useState<string>('');
-  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+  const [selectedSession, ] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState('');
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [uniqueId, setUniqueId] = useState('');
-  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [isInvalidDateModalOpen, setIsInvalidDateModalOpen] = useState(false);
+  const [isNoDateModalOpen, setIsNoDateModalOpen] = useState(false);
+  const [isCapacityFullModalOpen, setIsCapacityFullModalOpen] = useState(false);
 
   useEffect(() => {
     const username = Cookies.get('username');
@@ -93,43 +93,39 @@ const MyCart = () => {
     }
   }, [isPurchase, usernameState]);
 
-  useEffect(() => {
-    const fetchSessions = async () => {
-      try {
-        const response = await fetch('/api/session/read');
-        const result = await response.json();
-        
-        if (result.status) {
-          const sessionState = result.data.map((item: { name: string; }) => item.name);
-          setSessions(sessionState);
-        }
-
-      } catch (error) {
-        console.error('Error fetching sessions:', error);
-      }
-    };
-
-    fetchSessions();
-  }, []);
-
   const addProduct = (productId: string) => {
-    setIsLoading(true);
-    fetch('/api/cart/add', {
+    if (!selectedDate) {
+      setIsNoDateModalOpen(true);
+      return;
+    }
+    
+    fetch('/api/date_session/check_capacity', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username: usernameState, productId }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ totalPurchased: 1, servedDate: selectedDate }),
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.status) {
-          setCartItems(prevItems =>
-            prevItems.map(item =>
-              item.data._id === productId ? { ...item, count: item.count + 1 } : item
-            )
-          );
-          setIsLoading(false);
+        if (data.available) {
+          setIsLoading(true);
+          fetch('/api/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: usernameState, productId }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.status) {
+                setCartItems(prevItems =>
+                  prevItems.map(item =>
+                    item.data._id === productId ? { ...item, count: item.count + 1 } : item
+                  )
+                );
+                setIsLoading(false);
+              }
+            });
+        } else {
+          setIsCapacityFullModalOpen(true);
         }
       });
   };
@@ -161,36 +157,24 @@ const MyCart = () => {
   };
 
   const handlePurchase = async () => {
-    setSelectedSession('random'); // Reset selectedSession
-    if (!selectedSession) {
-      setIsSessionModalOpen(true);
-      setUniqueId(Math.random().toString(36).substr(2, 9));
+    if (!selectedDate) {
+      setIsInvalidDateModalOpen(true);
       return;
     }
-    // New: Validate selectedDate relative to today
     const today = new Date();
-    const purchaseDate = new Date(selectedDate);
-    const diffFromToday = (purchaseDate.getTime() - today.getTime()) / (1000 * 3600 * 24);
-    if (diffFromToday > 7) { // selectedDate is more than 7 days from today
-      setShowErrorModal(true);
-      setSelectedSession('');
+    const chosenDate = new Date(selectedDate);
+    today.setHours(0, 0, 0, 0);
+    chosenDate.setHours(0, 0, 0, 0);
+    const diffDays = (chosenDate.getTime() - today.getTime()) / (1000 * 3600 * 24);
+    if (diffDays < 0 || diffDays > 7) {
+      setIsInvalidDateModalOpen(true);
       return;
     }
-    
-    // Existing: Validate difference between session date and selectedDate
-    const sessionDate = new Date(selectedSession);
-    const diffDays = (sessionDate.getTime() - purchaseDate.getTime()) / (1000 * 3600 * 24);
-    if (diffDays < 7) {
-      setShowErrorModal(true);
-      setSelectedSession('');
-      return;
-    }
-    
-    setIsServed(true);
-    setIsQrModalOpen(true); // Execute purchase logic
+    setUniqueId(Math.random().toString(36).substr(2, 9));
+    setIsQrModalOpen(true);
   };
 
-  const afterPurchase = () => {
+  const afterPurchase = async () => {
     setIsPurchase(false);
     window.location.reload();
   };
@@ -259,8 +243,14 @@ const MyCart = () => {
           body: JSON.stringify(dataPurchasing),
         })
           .then((res) => res.json())
-          .then((data) => {
+          .then(async (data) => {
             if (data.status) {
+              const totalPurchased = cartItems.reduce((total, item) => total + item.count, 0);
+              await fetch('/api/date_session/write', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ totalPurchased, servedDate: selectedDate }),
+              });
               setIsServed(false);
               setIsLoading(false);
               setIsPurchase(true);
@@ -273,15 +263,6 @@ const MyCart = () => {
       setIsLoading(false);
     }
   };
-
-  // Add sortedCartItems: sort first by date (newest first) then by count (descending)
-  const sortedCartItems = [...cartItems].sort((a, b) => {
-    const dateA = new Date((a as any).dateAdded || 0);
-    const dateB = new Date((b as any).dateAdded || 0);
-    if (dateA > dateB) return -1;
-    if (dateA < dateB) return 1;
-    return b.count - a.count;
-  });
 
   if (!isLoggedIn) {
     return (
@@ -334,11 +315,21 @@ const MyCart = () => {
       )}
       <div className="p-4">
         <h2 className="text-2xl font-bold mb-4">Keranjang Pesanan Ku</h2>
+        {/* New date selection field moved into main content */}
+        <div className="mb-4">
+          <label className="block mb-1">Pilih Tanggal:</label>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="px-4 py-2 border rounded w-full"
+          />
+        </div>
         {cartItems.length === 0 ? (
           <p>Tidak ada paket pada keranjang saat ini</p>
         ) : (
           <ul>
-            {sortedCartItems.map(item => (
+            {cartItems.map(item => (
               <li key={item.data._id} className="flex justify-between items-center mb-2">
                 {/* <img src={item.data.imageUrl} alt={item.data.name} className="w-16 h-16 object-cover rounded mr-4" /> */}
                 <div className="flex flex-col flex-grow">
@@ -382,49 +373,6 @@ const MyCart = () => {
         </button>
       </div>
 
-      {isSessionModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
-          <div className="bg-white p-6 rounded-md shadow-md text-center">
-            {/* <h2 className="text-xl mb-4">Pilih Tanggal Wisata</h2> */}
-            {/* <select
-              value={selectedSession}
-              onChange={(e) => setSelectedSession(e.target.value)}
-              className="px-4 py-2 border rounded w-full mb-4"
-            >
-              <option value="">Pilih Tanggal</option>
-              {sessions.map((session, index) => (
-                <option key={index} value={session}>
-            {session}
-          </option>
-              ))}
-            </select> */}
-            <h2 className="text-xl mb-4">Pilih Tanggal Pesan</h2>
-            <input
-              type="date"
-              className="px-4 py-2 border rounded w-full mb-4"
-              onChange={(e) => setSelectedDate(e.target.value)}
-            />
-            <div className="flex justify-end space-x-2">
-              <button
-          onClick={() => setIsSessionModalOpen(false)}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-              >
-          Batal
-              </button>
-              <button
-          onClick={() => {
-            setIsSessionModalOpen(false);
-            handlePurchase();
-          }}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-          Submit
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {isQrModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50 overflow-auto">
           <div className="bg-white p-6 rounded-md shadow-md text-center relative max-h-full overflow-y-auto">
@@ -438,15 +386,23 @@ const MyCart = () => {
               className="object-cover" 
               />
             </div>
-            <button
-              onClick={() => {
-          setIsQrModalOpen(false);
-          setIsImageModalOpen(true);
-              }}
-              className="bg-[#794422] text-white px-4 py-2 rounded-md mt-4"
-            >
-              Lanjutkan
-            </button>
+            <div className="flex justify-center mt-4 space-x-4">
+              <button
+                onClick={() => setIsQrModalOpen(false)}
+                className="bg-red-500 text-white px-4 py-2 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setIsQrModalOpen(false);
+                  setIsImageModalOpen(true);
+                }}
+                className="bg-[#794422] text-white px-4 py-2 rounded-md"
+              >
+                Lanjutkan
+              </button>
+            </div>
             <button
               onClick={() => setIsQrModalOpen(false)}
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
@@ -485,15 +441,43 @@ const MyCart = () => {
         </div>
       )}
 
-      {showErrorModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-md text-center">
-            <p>Tiket hanya bisa dibeli h-7</p>
+      {isInvalidDateModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+          <div className="bg-white p-6 rounded-md shadow-md text-center">
+            <p>Pemesanan hanya bisa dilakukan h-7</p>
             <button
-              onClick={() => setShowErrorModal(false)}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md mt-4"
+              onClick={() => setIsInvalidDateModalOpen(false)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4"
             >
-              Oke
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      {isNoDateModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+          <div className="bg-white p-6 rounded-md shadow-md text-center">
+            <p>Masukkan tanggal terlebih dahulu</p>
+            <button
+              onClick={() => setIsNoDateModalOpen(false)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+      
+      {isCapacityFullModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+          <div className="bg-white p-6 rounded-md shadow-md text-center">
+            <p>Kapasitas sudah penuh</p>
+            <button
+              onClick={() => setIsCapacityFullModalOpen(false)}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4"
+            >
+              OK
             </button>
           </div>
         </div>

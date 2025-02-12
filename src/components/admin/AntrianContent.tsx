@@ -22,11 +22,15 @@ const AntrianContent: React.FC = () => {
   const [data, setData] = React.useState<Antrian[]>([]);
   const [, setIsFetched] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [sessions, setSessions] = useState<string[]>([]);
-  const [selectedSession, setSelectedSession] = useState<string>('');
-  const [sessionCapacity,] = useState<number>(10); // Example capacity
+  const [, setSessions] = useState<string[]>([]);
+  const [selectedSession, ] = useState<string>('');
+  const [sessionCapacity,] = useState<number>(250); // Example capacity
   const [buktiPembayaran, setBuktiPembayaran] = useState<fetchBuktiPembayaran[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [, setAcceptedCount] = useState(0);
+  const [selectedTanggal, setSelectedTanggal] = useState<string>('');
+  const [fullAccepted, setFullAccepted] = useState<Antrian[]>([]);
+  const [dateSessions, setDateSessions] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -65,28 +69,46 @@ const AntrianContent: React.FC = () => {
   }, [])
 
   useEffect(() => {
+    const fetchDateSessions = async () => {
+      try {
+        const res = await fetch('/api/date_session/read');
+        const result = await res.json();
+        if (result.status && result.data) {
+          // Assuming result.data is an array of session objects with a "date" field.
+          const dates = result.data.map((s: { date: string }) => s.date);
+          setDateSessions(dates);
+        }
+      } catch (error) {
+        console.error('Error fetching date sessions:', error);
+      }
+    };
+    fetchDateSessions();
+  }, []);
+
+  useEffect(() => {
     const fetching = async () => {
       const result = await fetch('/api/antrian/read_all');
-      const data = await result.json();
-      
-      if (data.status) {
+      const resData = await result.json();
+      if (resData.status) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const tempData = data.data.map((item: any) => ({
+        const fullData = resData.data.map((item: any) => ({
           id: item._id,
           nama: item.username,
           totalHarga: item.totalPrice,
-          tanggal: item.transaction_date,
+          tanggal: item.servedData,
           totalPemelian: item.totalPurchased,
           status: item.status,
           sesi: item.session,
           uniqueId: item.uniqueId,
         }));
-        setData(tempData);
+        const acceptedItems: Antrian[] = fullData.filter((item: Antrian) => item.status === 'accept');
+        const pendingItems: Antrian[] = fullData.filter((item: Antrian) => item.status === 'pending');
+        setFullAccepted(acceptedItems);
+        setData(pendingItems);
         setIsFetched(true);
         setIsLoading(false);
       }
-    }
-
+    };
     fetching();
   }, []);
 
@@ -105,6 +127,7 @@ const AntrianContent: React.FC = () => {
       console.log(response);
 
       setData(data.filter(item => item.id !== id));
+      setAcceptedCount(prev => prev + 1);
     } catch (error) {
       console.error('Error accepting request:', error);
     } finally {
@@ -138,23 +161,46 @@ const AntrianContent: React.FC = () => {
   const autoAcceptReject = async () => {
     const sortedData = [...data].sort((a, b) => b.totalPemelian - a.totalPemelian);
     let acceptedCount = 0;
-
     for (const item of sortedData) {
-      if (acceptedCount < sessionCapacity) {
+      if (acceptedCount < effectiveCapacity) {  // use effectiveCapacity here
         await handleAccept(item.id);
         acceptedCount++;
+        window.location.reload();
       } else {
         await handleRemove(item.id);
+        window.location.reload();
       }
     }
   };
   // --------------------- Sampai Sini -------------------------
 
+  // Compute effectiveCapacity based on selectedTanggal and dateSessions
+  const effectiveCapacity = selectedTanggal === "" ? 250 * dateSessions.length : sessionCapacity;
+
   // Update filtered data: filter and sort in descending order based on 'totalPemelian'
-  const filteredData = selectedSession 
+  const baseFiltered = selectedSession 
     ? data.filter(antrian => antrian.sesi === selectedSession && antrian.status === 'pending')
     : data.filter(antrian => antrian.status === 'pending');
-  const sortedFilteredData = filteredData.sort((a, b) => b.totalPemelian - a.totalPemelian);
+
+  const finalFilteredData = selectedTanggal
+    ? baseFiltered.filter(antrian => antrian.tanggal === selectedTanggal)
+    : baseFiltered;
+
+  const sortedFilteredData = finalFilteredData.sort((a, b) => b.totalPemelian - a.totalPemelian);
+
+  // Compute acceptedCount dynamically based on selectedTanggal.
+  const computedAcceptedCount = selectedTanggal
+    ? fullAccepted.filter(item => item.tanggal === selectedTanggal).length
+    : fullAccepted.length;
+
+  // Combine distinct dates available in date_session and antrian collection
+  const availableDates = Array.from(
+    new Set([
+      ...dateSessions,
+      ...data.map(item => item.tanggal),
+      ...fullAccepted.map(item => item.tanggal)
+    ])
+  ).sort();
 
   return (
     <>
@@ -173,18 +219,36 @@ const AntrianContent: React.FC = () => {
           >
             Aktifkan Greedy Algorithm
           </button>
-          <select
-            value={selectedSession}
-            onChange={(e) => setSelectedSession(e.target.value)}
-            className="px-4 py-2 border rounded"
-          >
-            <option value="">Pilih Sesi</option>
-            {sessions.map((session, index) => (
-              <option key={index} value={session}>
-                {session}
-              </option>
-            ))}
-          </select>
+          {/* Updated dropdown: shows all available dates from date_session and antrian collection */}
+          <div>
+            <select
+              value={selectedTanggal}
+              onChange={(e) => setSelectedTanggal(e.target.value)}
+              className="px-4 py-2 border rounded"
+            >
+              <option value="">Semua Tanggal</option>
+              {availableDates.map((tanggal, idx) => (
+                <option key={idx} value={tanggal}>
+                  {tanggal}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        {/* Modified card section with modern gray background and white text */}
+        <div className="flex my-4">
+          <div className="flex-1 mx-2 bg-gray-800 text-white shadow-md rounded p-4 text-center">
+            <h3 className="font-bold mb-2">Daya Tampung</h3>
+            <p className="text-xl">{selectedTanggal === "" ? "-" : effectiveCapacity}</p>
+          </div>
+          <div className="flex-1 mx-2 bg-gray-800 text-white shadow-md rounded p-4 text-center">
+            <h3 className="font-bold mb-2">Pengunjung Saat Ini</h3>
+            <p className="text-xl">{computedAcceptedCount}</p>
+          </div>
+          <div className="flex-1 mx-2 bg-gray-800 text-white shadow-md rounded p-4 text-center">
+            <h3 className="font-bold mb-2">Sisa</h3>
+            <p className="text-xl">{selectedTanggal === "" ? "-" : (effectiveCapacity - computedAcceptedCount)}</p>
+          </div>
         </div>
         <div className="overflow-auto max-h-[450px]">
           <table className="min-w-full bg-white">
@@ -192,7 +256,7 @@ const AntrianContent: React.FC = () => {
               <tr>
                 <th className="py-2 px-4 border-b">No</th>
                 <th className="py-2 px-4 border-b">Nama Pelanggan</th>
-                <th className="py-2 px-4 border-b">Jam</th>
+                <th className="py-2 px-4 border-b">Tanggal</th>
                 <th className="py-2 px-4 border-b">Jumlah</th>
                 <th className="py-2 px-4 border-b">Kode</th>
                 <th className="py-2 px-4 border-b">Bukti Pembayaran</th>
@@ -214,7 +278,7 @@ const AntrianContent: React.FC = () => {
                         alt={antrian.nama}
                         width={50}
                         height={50}
-                        className="cursor-pointer"
+                        className="cursor-pointer mx-auto"
                         onClick={() => {
                           const url = buktiPembayaran.find(item => item.uniqueId === antrian.uniqueId)?.imageUrl;
                           if (url) setPreviewImage(url);

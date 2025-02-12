@@ -8,6 +8,7 @@ interface AnalyticsData {
   username: string;
   value: number;
   status: string;
+  uniqueId: string;
 }
 
 const TransaksiContent = () => {
@@ -26,11 +27,12 @@ const TransaksiContent = () => {
           const newAnalyticsData: AnalyticsData[] = data.data.map((item: any, key: any) => ({
             id: key.toString(),
             orderId: String(item._id),
-            sesi: String(item.session),
+            sesi: String(item.servedData),
             order_date: String(item.transaction_date),
             username: String(item.username),
             value: Number(item.totalPrice),
             status: String(item.status),
+            uniqueId: String(item.uniqueId),
           }));
           setData(newAnalyticsData);
           setIsFetched(true);
@@ -91,7 +93,7 @@ const TransaksiContent = () => {
               <tr>
                 <th className="py-2 px-4 border-b">No</th>
                 <th className="py-2 px-4 border-b">Order Id</th>
-                <th className="py-2 px-4 border-b">Sesi</th>
+                <th className="py-2 px-4 border-b">Tanggal</th>
                 <th className="py-2 px-4 border-b">Tanggal Order</th>
                 <th className="py-2 px-4 border-b">Username</th>
                 <th className="py-2 px-4 border-b">Total Harga</th>
@@ -104,7 +106,7 @@ const TransaksiContent = () => {
                 .map((data, index) => (
                   <tr key={data.id} className="text-center">
                     <td className="py-2 px-4 border-b">{index + 1}</td>
-                    <td className="py-2 px-4 border-b">{data.orderId}</td>
+                    <td className="py-2 px-4 border-b">{data.uniqueId}</td>
                     <td className="py-2 px-4 border-b">{data.sesi}</td>
                     <td className="py-2 px-4 border-b">{data.order_date}</td>
                     <td className="py-2 px-4 border-b">{data.username}</td>
@@ -112,9 +114,15 @@ const TransaksiContent = () => {
                     <td className="py-2 px-4 border-b">
                       <button 
                         onClick={() => handleDelete(data.id, data.orderId)}
-                        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                        className="bg-red-500 text-white px-3 mx-1 py-1 rounded-md hover:bg-red-600"
                       >
                         Hapus
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(data.id, data.orderId)}
+                        className="bg-blue-500 text-white px-3 mx-1 py-1 rounded-md hover:bg-blue-600"
+                      >
+                        Keluar
                       </button>
                     </td>
                   </tr>
