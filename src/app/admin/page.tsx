@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import React, { useState } from 'react';
-import { FaTachometerAlt, FaUsers, FaSignOutAlt, FaChartBar, FaClock, FaNewspaper, FaWrench, FaBullhorn } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaSignOutAlt, FaChartBar, FaNewspaper, FaWrench, FaBullhorn } from 'react-icons/fa';
 import { MdPeople } from 'react-icons/md';
 import OverviewContent from '@/components/admin/OverviewContent';
 import DashboardContent from '@/components/admin/DashboardContent';
@@ -109,14 +109,14 @@ const AdminPage = () => {
                 <span className=" md:inline">Pesanan Masuk</span>
               </a>
             </li>
-            <li className="w-full">
+            {/* <li className="w-full">
               <a href="#session" 
                 onClick={() => setSelectedNav('session')} 
                 className={`flex items-center py-2 px-4 rounded hover:bg-gray-700 ${selectedNav === 'session' ? 'bg-[#794422]' : ''}`}>
                 <FaClock className="mr-2" />
                 <span className=" md:inline">Kelola Jadwal</span>
               </a>
-            </li>
+            </li> */}
             <li className="w-full">
               <a
                 href="#kelolaBerita"

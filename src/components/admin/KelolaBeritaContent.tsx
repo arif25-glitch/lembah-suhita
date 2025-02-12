@@ -7,7 +7,7 @@ interface Berita {
   id: string;
   title: string;
   content: string;
-  date: string;
+  imageUrl: string;
 }
 
 const KelolaBeritaContent: React.FC = () => {
@@ -65,7 +65,7 @@ const KelolaBeritaContent: React.FC = () => {
             id: String(item._id),
             title: String(item.title),
             content: String(item.content),
-            date: String(item.date)
+            imageUrl: String(item.imageUrl)
           }));
           setData(newBerita);
           setIsFetched(true);
@@ -99,7 +99,7 @@ const KelolaBeritaContent: React.FC = () => {
                 <th className="py-2 px-4 border-b">ID</th>
                 <th className="py-2 px-4 border-b">Judul</th>
                 <th className="py-2 px-4 border-b">Konten</th>
-                <th className="py-2 px-4 border-b">Tanggal</th>
+                <th className="py-2 px-4 border-b">Gambar</th>
                 <th className="py-2 px-4 border-b">Aksi</th>
               </tr>
             </thead>
@@ -110,7 +110,9 @@ const KelolaBeritaContent: React.FC = () => {
                     <td className="py-2 px-4 border-b">{index + 1}</td>
                     <td className="py-2 px-4 border-b">{berita.title}</td>
                     <td className="py-2 px-4 border-b">{berita.content.substring(0, 50)}...</td>
-                    <td className="py-2 px-4 border-b">{berita.date}</td>
+                    <td className="py-2 px-4 border-b">
+                      <img src={berita.imageUrl} alt="Berita" className="w-16 h-16 object-cover" />
+                    </td>
                     <td className="py-2 px-4 border-b">
                       <button
                         onClick={() => handleEdit(berita)}

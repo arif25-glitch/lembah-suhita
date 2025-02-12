@@ -4,7 +4,7 @@ interface Berita {
   id: string;
   title: string;
   content: string;
-  date: string;
+  imageUrl: string;
 }
 
 interface HapusBeritaModalProps {

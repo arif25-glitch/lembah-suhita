@@ -4,7 +4,7 @@ interface Berita {
   id: string;
   title: string;
   content: string;
-  date: string;
+  imageUrl: string;
 }
 
 interface EditBeritaModalProps {
@@ -16,28 +16,36 @@ interface EditBeritaModalProps {
 const EditBeritaModal: React.FC<EditBeritaModalProps> = ({ isOpen, onClose, berita }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [date, setDate] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState('');
 
   useEffect(() => {
     if (berita) {
       setTitle(berita.title);
       setContent(berita.content);
-      setDate(berita.date);
+      setImagePreview(berita.imageUrl);
     }
   }, [berita]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Call API to update berita
+      const formData = new FormData();
+      formData.append('id', berita?.id || '');
+      formData.append('title', title);
+      formData.append('content', content);
+      if (imageFile) {
+        formData.append('image', imageFile);
+      } else {
+        formData.append('imageUrl', imagePreview);
+      }
+
       const response = await fetch('/api/berita/update', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: berita?.id, title, content, date })
+        body: formData
       });
       const result = await response.json();
       if (result.status) {
-        // Optionally update state in parent component
         onClose();
       } else {
         alert('Gagal mengubah berita');
@@ -72,15 +80,19 @@ const EditBeritaModal: React.FC<EditBeritaModalProps> = ({ isOpen, onClose, beri
               required
             />
           </div>
+          {/* Changed date field into image file input */}
           <div className="mb-4">
-            <label className="block mb-1">Tanggal</label>
+            <label className="block mb-1">Gambar</label>
             <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)}
               className="w-full p-2 border rounded"
-              required
             />
+            {/* Optionally display current image preview */}
+            {imagePreview && !imageFile && (
+              <img src={imagePreview} alt="Current" className="mt-2 w-32 h-32 object-cover" />
+            )}
           </div>
           <div className="flex justify-end space-x-2">
             <button type="button" onClick={onClose} className="px-4 py-2 border rounded">

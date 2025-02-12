@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import Cookie from 'js-cookie';
@@ -7,10 +8,18 @@ interface HomeProps {
   otherMenu: (data: string) => void;
 }
 
+interface Berita {
+  id: string;
+  title: string;
+  content: string;
+  imageUrl: string;
+}
+
 const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
   const [showModal, setShowModal] = React.useState(false);
   // TODO: Replace with actual login check
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [berita, setBerita] = React.useState<Berita[]>([]);
 
   const handleCekPesanan = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -49,6 +58,27 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
       }, 300);
     }
   }, [setActiveMenu]);
+
+  useEffect(() => {
+    const fetchBerita = async () => {
+      try {
+        const response = await fetch('/api/berita/read_all');
+        const data = await response.json();
+        if (data.status) {
+          const beritaData: Berita[] = data.data.map((item: any) => ({
+            id: String(item._id),
+            title: String(item.title),
+            content: String(item.content),
+            imageUrl: String(item.imageUrl)
+          }));
+          setBerita(beritaData);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchBerita();
+  }, []);
 
   return (
     <>
@@ -96,19 +126,22 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
       <section id='berita' className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h2 className="text-3xl font-extrabold text-gray-900 text-center">Berita</h2>
         <div className="mt-8 flex overflow-x-scroll space-x-4">
-          {[1, 2, 3, 4, 5].map((id) => (
-            <div key={id} className="bg-white shadow-md rounded-lg p-4 min-w-[300px] flex flex-col items-center">
+          {berita.length > 0 ? berita.map((item) => (
+            <div key={item.id} className="bg-white shadow-md rounded-lg p-4 min-w-[300px] flex flex-col items-center">
               <div className="w-48 h-48 relative">
                 <Image
-                  src={`/img/berita/berita${id}.jpg`}
-                  alt={`Product ${id}`}
+                  src={item.imageUrl}
+                  alt={item.title}
                   layout="fill"
                   objectFit="cover"
                   className="rounded"
                 />
               </div>
+              <h3 className="mt-4 text-lg font-bold">{item.title}</h3>
+              <p className="text-sm text-gray-700 mt-2">{item.content.substring(0, 80)}...</p>
             </div>
-          ))}
+          ))
+          : <p className="text-center w-full">Tidak ada berita saat ini</p>}
         </div>
       </section>
 

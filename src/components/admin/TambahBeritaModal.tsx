@@ -8,20 +8,22 @@ interface TambahBeritaModalProps {
 const TambahBeritaModal: React.FC<TambahBeritaModalProps> = ({ isOpen, onClose }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [date, setDate] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Call API to create berita
-      const response = await fetch('/api/berita/create', {
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('content', content);
+      if(imageFile) formData.append('image', imageFile);
+
+      const response = await fetch('/api/berita/add', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, date })
+        body: formData
       });
       const result = await response.json();
       if (result.status) {
-        // Optionally refresh data here
         onClose();
       } else {
         alert('Gagal menambahkan berita');
@@ -57,11 +59,11 @@ const TambahBeritaModal: React.FC<TambahBeritaModalProps> = ({ isOpen, onClose }
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-1">Tanggal</label>
+            <label className="block mb-1">Gambar</label>
             <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)}
               className="w-full p-2 border rounded"
               required
             />
