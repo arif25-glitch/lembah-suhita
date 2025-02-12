@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   console.log(sanitiziedContent);
   console.log(sanitiziedTitle);
 
-  return new Promise((resolve) => {
+  return new Promise<Response>((resolve) => {
     cloudinary.uploader.upload_stream(
       {
         folder: 'berita',
@@ -36,9 +36,9 @@ export async function POST(req: Request) {
           const database = client.db('lembah_suhita');
           const collection = database.collection('berita');
           const dbResult = await collection.insertOne({
-            'title': sanitiziedTitle,
-            'content': sanitiziedContent,
-            'imageUrl': result?.url,
+            title: sanitiziedTitle,
+            content: sanitiziedContent,
+            imageUrl: result?.url,
           });
           resolve(new Response(JSON.stringify({ status: true, data: dbResult }), {
             headers: { 'Content-Type': 'application/json' },
