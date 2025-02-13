@@ -13,9 +13,6 @@ export async function POST(req: Request) {
   const sanitiziedTitle = title && typeof title === 'string' ? title : 'defaultTitle';
   const sanitiziedContent = content && typeof content === 'string' ? content : 'defaultContent';
 
-  console.log(sanitiziedContent);
-  console.log(sanitiziedTitle);
-
   return new Promise<Response>((resolve) => {
     cloudinary.uploader.upload_stream(
       {

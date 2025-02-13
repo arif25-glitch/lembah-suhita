@@ -14,7 +14,7 @@ const KelolaBeritaContent: React.FC = () => {
   const [data, setData] = useState<Berita[]>([]);
   const [isFetched, setIsFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const [isTambahOpen, setIsTambahOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isHapusOpen, setIsHapusOpen] = useState(false);
@@ -111,21 +111,25 @@ const KelolaBeritaContent: React.FC = () => {
                     <td className="py-2 px-4 border-b">{berita.title}</td>
                     <td className="py-2 px-4 border-b">{berita.content.substring(0, 50)}...</td>
                     <td className="py-2 px-4 border-b">
-                      <img src={berita.imageUrl} alt="Berita" className="w-16 h-16 object-cover" />
+                      <div className="flex justify-center">
+                        <img src={berita.imageUrl} alt="Berita" className="w-16 h-16 object-cover" />
+                      </div>
                     </td>
                     <td className="py-2 px-4 border-b">
-                      <button
-                        onClick={() => handleEdit(berita)}
-                        className="mr-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleHapus(berita)}
-                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                      >
-                        Hapus
-                      </button>
+                      <div className="flex justify-center space-x-2">
+                        <button
+                          onClick={() => handleEdit(berita)}
+                          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleHapus(berita)}
+                          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                        >
+                          Hapus
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
