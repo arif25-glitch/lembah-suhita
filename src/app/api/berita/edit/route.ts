@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const id = form.get('id') as string;
     const title = form.get('title') as string;
     const content = form.get('content') as string;
-    const imageField = form.get('image');
+    const imageField = form.get('image') as File;
     const existingImageUrl = form.get('imageUrl') as string || '';
 
     // Sanitize title and content

@@ -15,11 +15,19 @@ interface Berita {
   imageUrl: string;
 }
 
+interface Fitur{
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+}
+
 const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
   const [showModal, setShowModal] = React.useState(false);
   // TODO: Replace with actual login check
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [berita, setBerita] = React.useState<Berita[]>([]);
+  const [fitur, setFitur] = React.useState<Fitur[]>([]);
 
   const handleCekPesanan = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -58,6 +66,27 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
       }, 300);
     }
   }, [setActiveMenu]);
+
+  useEffect(() => {
+    const fetchFitur = async () => {
+      try {
+        const response = await fetch('/api/fitur/read_all');
+        const data = await response.json();
+        if (data.status) {
+          const fiturData: Fitur[] = data.data.map((item: any) => ({
+            id: String(item._id),
+            title: String(item.title),
+            description: String(item.description),
+            imageUrl: String(item.imageUrl)
+          }));
+          setFitur(fiturData);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchFitur();
+  }, []);
 
   useEffect(() => {
     const fetchBerita = async () => {
@@ -105,21 +134,14 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
           </div>
         </div>
         <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 mt-12">
-          <div className="p-4 bg-gray-100 rounded shadow-md flex flex-col items-center transform transition-transform duration-300 hover:scale-105 m-2 w-80 h-100">
-            <Image src="/img/assets/tentangkami/edukasi-lebah-madu.png" alt="Edukasi Lebah Madu" width={200} height={150} className="mb-2" />
-            <span className="text-[#794422] font-bold">Edukasi Lebah Madu</span>
-            <p className="text-gray-700 mt-2 text-center">Edukasi lebah madu merupakan kegiatan pembelajaran yang bertujuan untuk mengenalkan proses budidaya lebah madu, peran lebah dalam ekosistem, dan manfaat produk lebah seperti madu, propolis, dan royal jelly.</p>
-          </div>
-          <div className="p-4 bg-gray-100 rounded shadow-md flex flex-col items-center transform transition-transform duration-300 hover:scale-105 m-2 w-80 h-96">
-            <Image src="/img/assets/tentangkami/eco-print.png" alt="Eco Print" width={200} height={150} className="mb-2" />
-            <span className="text-[#794422] font-bold">Eco Print</span>
-            <p className="text-gray-700 mt-2 text-center">Edukasi ecoprint mengenalkan teknik pewarnaan alami pada kain menggunakan daun, bunga, dan bagian tumbuhan lainnya.</p>
-          </div>
-          <div className="p-4 bg-gray-100 rounded shadow-md flex flex-col items-center transform transition-transform duration-300 hover:scale-105 m-2 w-80 h-96">
-            <Image src="/img/assets/tentangkami/camping-ground.png" alt="Camping Ground" width={200} height={150} className="mb-2" />
-            <span className="text-[#794422] font-bold">Camping Ground</span>
-            <p className="text-gray-700 mt-2 text-center">Camping ground area yang disediakan untuk kegiatan berkemah di alam terbuka, menawarkan pengalaman dekat dengan alam yang cocok untuk rekreasi, edukasi, atau kegiatan kelompok.</p>
-          </div>
+          {fitur.length > 0 ? fitur.map((item) => (
+            <div key={item.id} className="p-4 bg-gray-100 rounded shadow-md flex flex-col items-center transform transition-transform duration-300 hover:scale-105 m-2 w-80 h-96">
+              <Image src={item.imageUrl} alt={item.title} width={200} height={150} className="mb-2" />
+              <span className="text-[#794422] font-bold">{item.title}</span>
+              <p className="text-gray-700 mt-2 text-center">{item.description}</p>
+            </div>
+          ))
+          : <p className="text-center w-full">Tidak ada fitur saat ini</p>}
         </div>
       </section>
 

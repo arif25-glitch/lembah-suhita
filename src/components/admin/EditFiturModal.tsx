@@ -39,7 +39,7 @@ const EditFiturModal: React.FC<EditFiturModalProps> = ({ isOpen, onClose, fitur 
       formData.append('title', judul);
       formData.append('description', deskripsi);
       if (gambar) {
-        formData.append('imageUrl', gambar);
+        formData.append('image', gambar);
       } else {
         formData.append('imageUrl', existingGambarUrl);
       }
