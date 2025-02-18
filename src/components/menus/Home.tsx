@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Cookie from 'js-cookie';
 
@@ -15,11 +15,17 @@ interface Berita {
   imageUrl: string;
 }
 
-interface Fitur{
+interface Fitur {
   id: string;
   title: string;
   description: string;
   imageUrl: string;
+}
+
+// Add new interface for pengumuman
+interface Pengumuman {
+  id: string;
+  text: string;
 }
 
 const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
@@ -28,6 +34,8 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [berita, setBerita] = React.useState<Berita[]>([]);
   const [fitur, setFitur] = React.useState<Fitur[]>([]);
+  const [pengumuman, setPengumuman] = useState<Pengumuman[]>([]);
+  const [promo, setPromo] = useState<Pengumuman[]>([]);
 
   const handleCekPesanan = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -109,11 +117,50 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
     fetchBerita();
   }, []);
 
+  // Fetch pengumuman data from /api/pengumuman/read_all using GET
+  useEffect(() => {
+    const fetchPengumuman = async () => {
+      try {
+        const response = await fetch('/api/pengumuman/read_all', { method: 'GET' });
+        const data = await response.json();
+        if (data.status) {
+          const mappedPengumuman: Pengumuman[] = data.data.map((item: any) => ({
+            id: String(item._id),
+            text: item.text || `${item.judul} - ${item.isi.substring(0, 50)}... - ${item.tanggal}`
+          }));
+          setPengumuman(mappedPengumuman);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchPengumuman();
+  }, []);
+
+  useEffect(() => {
+    const fetchPromo = async () => {
+      try {
+        const response = await fetch('/api/promo/read_all', { method: 'GET' });
+        const data = await response.json();
+        if (data.status) {
+          const mappedPengumuman: Pengumuman[] = data.data.map((item: any) => ({
+            id: String(item._id),
+            text: item.text || `${item.judul} - ${item.isi.substring(0, 50)}... - ${item.tanggal}`
+          }));
+          setPromo(mappedPengumuman);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchPromo();
+  }, []);
+
   return (
     <>
       <section className="relative bg-gray-100 min-h-screen flex items-center justify-center">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('/img/assets/landing-background.jpeg')` }}></div>
-          <div className="absolute inset-0 bg-dark opacity-50"></div>
+        <div className="absolute inset-0 bg-dark opacity-50"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl px-8 py-12 inline-block">
             <h1 className="text-4xl font-extrabold text-[#794422] sm:text-5xl lg:text-6xl">
@@ -141,7 +188,7 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
               <p className="text-gray-700 mt-2 text-center">{item.description}</p>
             </div>
           ))
-          : <p className="text-center w-full">Tidak ada fitur saat ini</p>}
+            : <p className="text-center w-full">Tidak ada fitur saat ini</p>}
         </div>
       </section>
 
@@ -163,7 +210,7 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
               <p className="text-sm text-gray-700 mt-2">{item.content.substring(0, 80)}...</p>
             </div>
           ))
-          : <p className="text-center w-full">Tidak ada berita saat ini</p>}
+            : <p className="text-center w-full">Tidak ada berita saat ini</p>}
         </div>
       </section>
 
@@ -201,15 +248,34 @@ const Home: React.FC<HomeProps> = ({ setActiveMenu, otherMenu }) => {
         <div className="my-10 p-4 bg-[#794422] rounded shadow-md transform transition-transform duration-300 hover:scale-105 w-full flex flex-col items-center">
           <h3 className="text-xl font-bold mb-2 bg-white text-[#794422] py-2 px-10 rounded-full">Promo</h3>
           <div className="flex-grow"></div>
-          <p className="mt-auto text-white">S & K Berlaku</p>
+          {promo.length > 0 ? (
+            <div className="space-y-4">
+              {promo.map(item => (
+                <p key={item.id} className="text-center text-lg text-white font-bold">
+                  {item.text}
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-lg">Tidak ada promo saat ini</p>
+          )}
         </div>
       </section>
 
       <section id='pengumumanpenting' className="p-10 bg-white rounded shadow-md">
         <h2 className="text-3xl font-extrabold text-gray-900 mb-10 text-center">PENGUMUMAN PENTING!</h2>
         <div className="my-10 p-4 bg-[#794422] rounded shadow-md transform transition-transform duration-300 hover:scale-105 w-full flex flex-col items-center">
-          <p className="mt-auto text-white font-bold text-center" style={{ fontSize: "18px" }}>Tiket kunjungan ke Lembah Suhita terbatas, jadi jangan sampai ketinggalan! 
-            Nikmati pengalaman seru menjelajahi keindahan alam, edukasi lebah madu, ecoprint, hingga camping ground bersama keluarga dan teman-teman.</p>
+          {pengumuman.length > 0 ? (
+            <div className="space-y-4">
+              {pengumuman.map(item => (
+                <p key={item.id} className="text-center text-lg text-white font-bold">
+                  {item.text}
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-lg">Tidak ada pengumuman saat ini</p>
+          )}
           <div className="flex-grow"></div>
           <div className="flex justify-center space-x-4">
             <a href="#" onClick={(e) => { e.preventDefault(); otherMenu('Pilih Paket'); }} className="text-xl font-bold mb-2 bg-white text-[#794422] my-10 py-2 px-10 rounded-full transform transition-transform duration-300 hover:scale-105">Pesan Sekarang</a>

@@ -1,41 +1,41 @@
 import React, { useState, useEffect } from 'react';
 
-interface Pengumuman {
+interface Promo {
   id: string;
   text: string;
 }
 
-interface EditPengumumanModalProps {
+interface EditPromoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  pengumuman: Pengumuman | null;
+  promo: Promo | null;
 }
 
-const EditPengumumanModal: React.FC<EditPengumumanModalProps> = ({ isOpen, onClose, pengumuman }) => {
+const EditPromoModal: React.FC<EditPromoModalProps> = ({ isOpen, onClose, promo }) => {
   const [text, setText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (pengumuman) {
-      setText(pengumuman.text);
+    if (promo) {
+      setText(promo.text);
     }
-  }, [pengumuman]);
+  }, [promo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await fetch('/api/pengumuman/update', {
+      const response = await fetch('/api/promo/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: pengumuman?.id, text })
+        body: JSON.stringify({ id: promo?.id, text })
       });
       const result = await response.json();
       if (result.status) {
         onClose();
         window.location.reload();
       } else {
-        alert('Gagal mengubah pengumuman');
+        alert('Gagal mengubah promo');
       }
     } catch (error) {
       console.error(error);
@@ -44,7 +44,7 @@ const EditPengumumanModal: React.FC<EditPengumumanModalProps> = ({ isOpen, onClo
     }
   };
 
-  if (!isOpen || !pengumuman) return null;
+  if (!isOpen || !promo) return null;
   return (
     <>
       {isLoading && (
@@ -56,7 +56,7 @@ const EditPengumumanModal: React.FC<EditPengumumanModalProps> = ({ isOpen, onClo
       )}
       <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
         <div className="bg-white p-6 rounded-md w-96">
-          <h2 className="text-xl font-bold mb-4">Edit Pengumuman</h2>
+          <h2 className="text-xl font-bold mb-4">Edit Promo</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block mb-1">Text</label>
@@ -82,4 +82,4 @@ const EditPengumumanModal: React.FC<EditPengumumanModalProps> = ({ isOpen, onClo
   );
 };
 
-export default EditPengumumanModal;
+export default EditPromoModal;
