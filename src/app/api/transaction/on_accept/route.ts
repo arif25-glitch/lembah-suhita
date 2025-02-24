@@ -7,6 +7,7 @@ export async function POST(req: Request) {
     await client.connect();
     const database = client.db('lembah_suhita');
     const antrianCollection = database.collection('antrian');
+    const dataPenjualan = database.collection('data_penjualan');
     const sessionsCollection = database.collection('sessions');
 
     // Check session availability
@@ -34,6 +35,7 @@ export async function POST(req: Request) {
 
     // Insert transaction
     const result = await antrianCollection.insertOne(data);
+    const dataPenjualanResult = await dataPenjualan.insertOne(data);
 
     // Update session terisi count
     await sessionsCollection.updateOne(
@@ -43,7 +45,8 @@ export async function POST(req: Request) {
 
     return new Response(JSON.stringify({ 
       status: true, 
-      data: result 
+      data: result,
+      dataPenjualan: dataPenjualanResult,
     }), {
       headers: { 'Content-Type': 'application/json' },
     });

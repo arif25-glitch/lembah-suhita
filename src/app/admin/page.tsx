@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import React, { useState } from 'react';
-import { FaTachometerAlt, FaUsers, FaSignOutAlt, FaChartBar, FaNewspaper, FaWrench, FaBullhorn } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaSignOutAlt, FaChartBar, FaNewspaper, FaWrench, FaBullhorn, FaHistory } from 'react-icons/fa';
 import { MdPeople } from 'react-icons/md';
 import OverviewContent from '@/components/admin/OverviewContent';
 import DashboardContent from '@/components/admin/DashboardContent';
@@ -16,6 +16,7 @@ import KelolaPengumumanContent from '@/components/admin/KelolaPengumumanContent'
 import KelolaFiturContent from '@/components/admin/KelolaFiturContent';
 import KelolaPaketContent from '@/components/admin/KelolaPaketContent';
 import KelolaPromoContent from '@/components/admin/KelolaPromoContent';
+import KelolaDataPenjualan from '@/components/admin/KelolaDataPenjualan';
 
 const AdminPage = () => {
   const [selectedNav, setSelectedNav] = useState('dashboard');
@@ -43,6 +44,8 @@ const AdminPage = () => {
         return <KelolaPaketContent />;
       case 'kelolaPromo':
         return <KelolaPromoContent />;
+      case 'dataPenjualan':
+        return <KelolaDataPenjualan />;
       default:
         return <OverviewContent />;
     }
@@ -159,6 +162,16 @@ const AdminPage = () => {
                 className={`flex items-center py-2 px-4 rounded hover:bg-gray-700 ${selectedNav === 'kelolaPromo' ? 'bg-[#794422]' : ''}`}>
                 <FaChartBar className="mr-2" />
                 <span className="md:inline">Kelola Promo</span>
+              </a>
+            </li>
+            <li className="w-full">
+              <a
+                href="#dataPenjualan"
+                onClick={() => setSelectedNav('dataPenjualan')}
+                className={`flex items-center py-2 px-4 rounded hover:bg-gray-700 ${selectedNav === 'dataPenjualan' ? 'bg-[#794422]' : ''}`}
+              >
+                <FaHistory className="mr-2" />
+                <span className="md:inline">Data Penjualan</span>
               </a>
             </li>
             <li className="w-full">
