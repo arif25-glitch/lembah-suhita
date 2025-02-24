@@ -56,7 +56,7 @@ const TransaksiContent = () => {
   };
 
   const handleDelete = async (id: string, orderId: string) => {
-    if (!window.confirm("Yakin ingin menghapus transaksi ini?")) return;
+    if (!window.confirm("Yakin pengunjung ini telah keluar?")) return;
     try {
       setIsLoading(true);
       const response = await fetch('/api/transaction/remove', {
