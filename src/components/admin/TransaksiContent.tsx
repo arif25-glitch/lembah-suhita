@@ -9,6 +9,7 @@ interface AnalyticsData {
   value: number;
   status: string;
   uniqueId: string;
+  totalPurchased: string;
 }
 
 const TransaksiContent = () => {
@@ -33,6 +34,7 @@ const TransaksiContent = () => {
             value: Number(item.totalPrice),
             status: String(item.status),
             uniqueId: String(item.uniqueId),
+            totalPurchased: String(item.totalPurchased),
           }));
           setData(newAnalyticsData);
           setIsFetched(true);
@@ -95,6 +97,7 @@ const TransaksiContent = () => {
                 <th className="py-2 px-4 border-b">Order Id</th>
                 <th className="py-2 px-4 border-b">Tanggal</th>
                 <th className="py-2 px-4 border-b">Tanggal Order</th>
+                <th className="py-2 px-4 border-b">Total Tiket</th>
                 <th className="py-2 px-4 border-b">Username</th>
                 <th className="py-2 px-4 border-b">Total Harga</th>
                 <th className="py-2 px-4 border-b">Action</th>
@@ -109,6 +112,7 @@ const TransaksiContent = () => {
                     <td className="py-2 px-4 border-b">{data.uniqueId}</td>
                     <td className="py-2 px-4 border-b">{data.sesi}</td>
                     <td className="py-2 px-4 border-b">{data.order_date}</td>
+                    <td className="py-2 px-4 border-b">{data.totalPurchased}</td>
                     <td className="py-2 px-4 border-b">{data.username}</td>
                     <td className="py-2 px-4 border-b">{formatCurrency(Number(data.value))}</td>
                     <td className="py-2 px-4 border-b">
