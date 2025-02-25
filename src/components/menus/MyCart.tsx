@@ -379,7 +379,7 @@ const MyCart = () => {
             <h2 className="text-xl mb-4">Scan QR Code untuk Pembayaran</h2>
             <div className="flex justify-center">
               <Image 
-              src="/img/qris/qris1hd.jpg" 
+              src="/img/qris/qr.png" 
               alt="QR Code" 
               width={500}
               height={500}
