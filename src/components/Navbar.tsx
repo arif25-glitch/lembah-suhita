@@ -119,6 +119,21 @@ const Navbar = () => {
               ))}
             </div>
             <div className="hidden sm:flex sm:items-center space-x-4">
+              {/* New WhatsApp button */}
+              <button
+                onClick={() => window.open('https://wa.me/6285183045160', '_blank')}
+                className="relative bg-green-500 text-white px-3 py-2 rounded-md text-sm font-medium flex items-center hover:bg-green-600"
+              >
+                <Image
+                  className="h-5 w-5 mr-2"
+                  src="/img/icons/whatsapp.png"
+                  width={20}
+                  height={20}
+                  alt="WhatsApp"
+                />
+                WhatsApp
+              </button>
+              {/* Existing Cart button */}
               <button
                 onClick={() => handleMenuClick('Cart')}
                 className="relative bg-gray-100 text-[#794422] px-3 py-2 rounded-md text-sm font-medium flex items-center hover:bg-gray-200"
