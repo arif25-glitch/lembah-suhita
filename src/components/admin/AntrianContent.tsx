@@ -160,19 +160,17 @@ const AntrianContent: React.FC = () => {
   // Bagian Algoritma Greedy
   const autoAcceptReject = async () => {
     const sortedData = [...data].sort((a, b) => b.totalPemelian - a.totalPemelian);
-    let acceptedCount = 0;
+    let totalAcceptedTickets = 0;
     for (const item of sortedData) {
-      if (acceptedCount < effectiveCapacity) {  // use effectiveCapacity here
+      if (totalAcceptedTickets + item.totalPemelian <= effectiveCapacity) {
         await handleAccept(item.id);
-        acceptedCount++;
-        window.location.reload();
+        totalAcceptedTickets += item.totalPemelian;
       } else {
         await handleRemove(item.id);
-        window.location.reload();
       }
     }
+    window.location.reload();
   };
-  // --------------------- Sampai Sini -------------------------
 
   // Compute effectiveCapacity based on selectedTanggal and dateSessions
   const effectiveCapacity = selectedTanggal === "" ? 250 * dateSessions.length : sessionCapacity;

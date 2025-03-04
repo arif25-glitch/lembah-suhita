@@ -6,8 +6,13 @@ export async function POST(req: Request) {
     const body = await req.json();
     await client.connect();
     const database = client.db('lembah_suhita');
-    const collection = database.collection('antrian');
-    await collection.updateOne(
+    const antrianCollection = database.collection('antrian');
+    const dataPenjualanCollection = database.collection('data_penjualan');
+    await dataPenjualanCollection.updateOne(
+      { _id: new ObjectId(body.id) },
+      { $set: { status: 'accept' } }
+    )
+    await antrianCollection.updateOne(
       { _id: new ObjectId(body.id) },
       { $set: { status: 'accept' } }
     );
