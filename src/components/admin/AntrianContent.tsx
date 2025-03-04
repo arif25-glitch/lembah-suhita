@@ -112,7 +112,7 @@ const AntrianContent: React.FC = () => {
     fetching();
   }, []);
 
-  const handleAccept = async (id: string) => {
+  const handleAccept = async (id: string, tanggal: string, totalPemelian: number) => {
     setIsLoading(true);
     try {
       // Simulate API call
@@ -121,7 +121,7 @@ const AntrianContent: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, servedDate: tanggal, totalPurchased: totalPemelian }),
       });
        
       console.log(response);
@@ -163,7 +163,7 @@ const AntrianContent: React.FC = () => {
     let totalAcceptedTickets = 0;
     for (const item of sortedData) {
       if (totalAcceptedTickets + item.totalPemelian <= effectiveCapacity) {
-        await handleAccept(item.id);
+        await handleAccept(item.id, item.tanggal, item.totalPemelian);
         totalAcceptedTickets += item.totalPemelian;
       } else {
         await handleRemove(item.id);
@@ -289,7 +289,7 @@ const AntrianContent: React.FC = () => {
                   </td>
                   <td className="py-2 px-4 border-b space-x-2">
                     <button 
-                      onClick={() => handleAccept(antrian.id)}
+                      onClick={() => handleAccept(antrian.id, antrian.tanggal, antrian.totalPemelian)}
                       className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                     >
                       Terima

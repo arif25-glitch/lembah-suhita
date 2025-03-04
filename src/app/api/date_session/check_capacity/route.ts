@@ -11,7 +11,11 @@ export async function POST(req: Request) {
     let available: boolean;
     if (session) {
       available = (session.filled + totalPurchased) <= session.capacity;
+      console.log(session)
+      console.log(totalPurchased)
     } else {
+      console.log(session)
+      console.log(totalPurchased)
       // If no session exists, assume default capacity 250 with no bookings
       available = totalPurchased <= 250;
     }

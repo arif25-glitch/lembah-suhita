@@ -39,6 +39,7 @@ const MyCart = () => {
   const [isInvalidDateModalOpen, setIsInvalidDateModalOpen] = useState(false);
   const [isNoDateModalOpen, setIsNoDateModalOpen] = useState(false);
   const [isCapacityFullModalOpen, setIsCapacityFullModalOpen] = useState(false);
+  const [totalPesan, setTotalPesan] = useState(0);
 
   useEffect(() => {
     const username = Cookies.get('username');
@@ -58,12 +59,15 @@ const MyCart = () => {
         .then((data) => {
           if (data.status) {
             setCartItems(data.data);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const total = data.data.reduce((total: any, item: any) => {
-              const itemTotal = (parseInt(item.data.price) - parseInt(item.data.priceDiscount)) * item.count;
+            // Existing total price calculation
+            const total = data.data.reduce((total: number, item: any) => {
+              const itemTotal = (parseInt(item.data.harga) - parseInt(item.data.priceDiscount)) * item.count;
               return total + itemTotal;
             }, 0);
             setTotalPrice(total);
+            // New: Calculate totalPesan as the sum of each item's count
+            const totalItemsCount = data.data.reduce((acc: number, item: any) => acc + item.count, 0);
+            setTotalPesan(totalItemsCount);
             setIsLoading(false);
           }
         });
@@ -98,11 +102,12 @@ const MyCart = () => {
       setIsNoDateModalOpen(true);
       return;
     }
-    
+    setTotalPesan(totalPesan + 1);
+
     fetch('/api/date_session/check_capacity', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ totalPurchased: 1, servedDate: selectedDate }),
+      body: JSON.stringify({ totalPurchased: totalPesan, servedDate: selectedDate }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -132,6 +137,7 @@ const MyCart = () => {
 
   const removeProduct = (productId: string) => {
     setIsLoading(true);
+    setTotalPesan(totalPesan - 1);
     fetch('/api/cart/remove', {
       method: 'POST',
       headers: {
@@ -161,6 +167,18 @@ const MyCart = () => {
       setIsInvalidDateModalOpen(true);
       return;
     }
+    // Check capacity before proceeding with purchase
+    const capacityRes = await fetch('/api/date_session/check_capacity', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ totalPurchased: totalPesan, servedDate: selectedDate }),
+    });
+    const capacityData = await capacityRes.json();
+    if (!capacityData.available) {
+      setIsCapacityFullModalOpen(true);
+      return;
+    }
+
     const today = new Date();
     const chosenDate = new Date(selectedDate);
     today.setHours(0, 0, 0, 0);

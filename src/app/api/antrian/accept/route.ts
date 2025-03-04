@@ -8,6 +8,27 @@ export async function POST(req: Request) {
     const database = client.db('lembah_suhita');
     const antrianCollection = database.collection('antrian');
     const dataPenjualanCollection = database.collection('data_penjualan');
+    const dateSession = database.collection('date_session');
+
+    const totalPurchased = body.totalPurchased;
+    const servedDate = body.servedDate;
+
+    const existingDateSession = await dateSession.findOne({ date: servedDate });
+
+    if (existingDateSession) {
+      await dateSession.updateOne(
+        { date: servedDate, capacity: 250 },
+        { $inc: { filled: totalPurchased } }
+      );
+    } else {
+      await dateSession.insertOne({
+        date: servedDate,
+        filled: totalPurchased,
+        capacity: 250,
+      });
+    }
+
+
     await dataPenjualanCollection.updateOne(
       { _id: new ObjectId(body.id) },
       { $set: { status: 'accept' } }
