@@ -188,10 +188,13 @@ const AntrianContent: React.FC = () => {
 
   const sortedFilteredData = finalFilteredData.sort((a, b) => b.totalPemelian - a.totalPemelian);
 
-  // Compute acceptedCount dynamically based on selectedTanggal.
+  // Compute accepted total based on selectedTanggal.
   const computedAcceptedCount = selectedTanggal
-    ? fullAccepted.filter(item => item.tanggal === selectedTanggal).length
-    : fullAccepted.length;
+    ? fullAccepted.filter(item => item.tanggal === selectedTanggal).reduce((sum, item) => sum + item.totalPemelian, 0)
+    : fullAccepted.reduce((sum, item) => sum + item.totalPemelian, 0);
+
+  // New: Compute total Pesanan Tiket from the table data (sum of 'Jumlah')
+  const totalPesananTiket = sortedFilteredData.reduce((sum, item) => sum + item.totalPemelian, 0);
 
   // Combine distinct dates available in date_session and antrian collection
   const availableDates = Array.from(
@@ -242,15 +245,15 @@ const AntrianContent: React.FC = () => {
             <p className="text-xl">{selectedTanggal === "" ? "-" : effectiveCapacity}</p>
           </div>
           <div className="flex-1 mx-2 bg-gray-800 text-white shadow-md rounded p-4 text-center">
-            <h3 className="font-bold mb-2">Pengunjung Saat Ini</h3>
-            <p className="text-xl">{computedAcceptedCount}</p>
+            <h3 className="font-bold mb-2">Total Pesanan Tiket</h3>
+            <p className="text-xl">{totalPesananTiket}</p>
           </div>
           <div className="flex-1 mx-2 bg-gray-800 text-white shadow-md rounded p-4 text-center">
             <h3 className="font-bold mb-2">Sisa</h3>
             <p className="text-xl">{selectedTanggal === "" ? "-" : (effectiveCapacity - computedAcceptedCount)}</p>
           </div>
         </div>
-        <div className="overflow-auto max-h-[450px]">
+        <div className="overflow-auto max-h-[400px]">
           <table className="min-w-full bg-white">
             <thead>
               <tr>
